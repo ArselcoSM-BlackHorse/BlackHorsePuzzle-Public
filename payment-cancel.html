@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Payment Cancelled</title>
+  <style>
+    body {
+      background-color: #2c2c2c;
+      color: #ff6666;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 100px;
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 1.1em;
+      color: white;
+    }
+
+    a {
+      color: #00cc99;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 30px;
+      font-weight: bold;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>❌ Payment Cancelled</h1>
+  <p>Your PayPal transaction was cancelled. If this was a mistake, you can try again.</p>
+  <a href="/index.html">← Return to Game</a>
+
+  <script>
+    // Optional: delay auto redirect after 5 seconds
+    setTimeout(() => {
+      window.location.href = "/index.html";
+    }, 5000);
+  </script>
+</body>
+</html>
