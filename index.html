@@ -256,10 +256,10 @@ if ('serviceWorker' in navigator) {
 }
 
 //======================================================================================
-const email = localStorage.getItem("email");
-if (email) {
-  syncProgressFromBackend(email);
-}
+//const email = localStorage.getItem("email");
+//if (email) {
+//  syncProgressFromBackend(email);
+//}
 
 // Deklarasi variabel utama
 let userData = JSON.parse(localStorage.getItem(`gameData-${email}`)) || {};
