@@ -255,6 +255,137 @@ if ('serviceWorker' in navigator) {
   console.log('⚠️ Service Worker not supported in this browser');
 }
 
+async function syncProgressFromBackend(email) {
+  try {
+      console.log('🔄 Syncing progress from backend for:', email);
+
+      // ✅ STEP 1: Ambil data dari localStorage sebagai fallback
+      const localData = JSON.parse(localStorage.getItem(`gameData-${email}`))?.gameProgress || {};
+      const localProgress = localData.gameProgress || {};
+
+      console.log('📱 Local data:', localProgress);
+
+      // ✅ STEP 2: Kirim request ke backend dengan data lokal sebagai konteks
+    const response = await axios.post(
+      `https://backend-paypalblackhorsepuzzle.onrender.com/api/users/${encodeURIComponent(email)}/progress`,
+      { 
+        email, 
+        level: 'Level01Scene',
+        // Kirim data lokal untuk perbandingan
+        localProgress: localProgress
+      },
+      { timeout: 200000 }
+    );
+
+     // ✅ STEP 3: Ambil data dari backend (PRIORITAS UTAMA)
+    const backendData = response.data;
+    const progress = backendData.progress || {};
+    
+    console.log('🌐 Backend data:', progress);
+
+     // ✅ STEP 4: SELALU GUNAKAN DATA BACKEND sebagai sumber truth
+    const finalData = {
+      level01Score: progress.level01Score || 0,
+      level01HighScore: progress.level01HighScore || 0,
+      totalPlays: progress.totalPlays || 0,
+      level01Completed: progress.level01Completed || false,
+      bestTime: progress.bestTime || 0,
+      averageTime: progress.averageTime || 0,
+      completionRate: progress.completionRate || 0,
+      perfectGames: progress.perfectGames || 0,
+      totalAttempts: progress.totalAttempts || 0,
+      gameOvers: progress.gameOvers || 0,
+      favoriteGiven: progress.favoriteGiven || false,
+      lastPlayedDate: progress.lastPlayedDate || new Date().toISOString()
+    }; 
+
+    // ✅ STEP 5: Hitung user classification berdasarkan data backend
+    const newUser = !progress || (progress.totalPlays || 0) === 0;
+    const winUser = progress && (progress.totalPlays || 0) >= 1 && (progress.level01Score || 0) > 0;
+    const lossUser = progress && (progress.totalPlays || 0) >= 3 && (progress.level01Score || 0) === 0;
+    
+    console.log(`👤 Backend user classification: newUser=${newUser}, winUser=${winUser}, lossUser=${lossUser}`);
+    
+    // ✅ STEP 6: UPDATE localStorage dengan data backend (FORCE UPDATE)
+    const updatedUserData = {
+      gameProgress: finalData,
+      newUser,
+      winUser,
+      lossUser,
+      lastSyncTime: new Date().toISOString(),
+      syncedFromBackend: true
+    };
+
+    // Update gameData - Simpan data pengguna yang diperbarui ke localStorage
+    localStorage.setItem(`gameData-${email}`, JSON.stringify(updatedUserData));
+
+    // Update score
+    localStorage.setItem(`score_${email}`, (finalData.level01Score || 0).toString());
+   
+    // Update game history
+    localStorage.setItem(`gameHistory_${email}`, JSON.stringify({
+      hasPlayedBefore: (finalData.totalPlays || 0) > 0,
+      totalGamesPlayed: finalData.totalPlays || 0,
+      highestScore: finalData.level01HighScore || 0,
+      gameOvers: finalData.gameOvers || 0,
+      lastPlayedDate: finalData.lastPlayedDate,
+      favoriteGiven: finalData.favoriteGiven || false,
+      newUser,
+      winUser,
+      lossUser
+    }));
+    
+     // ✅ STEP 7: UPDATE global variables
+    window.level01Score = finalData.level01Score || 0;
+    window.playerScore = finalData.level01Score || 0;
+    
+    // ✅ STEP 8: UPDATE UI jika scene sudah aktif
+    if (window.Phaser && window.game && window.game.scene) {
+      const level01 = window.game.scene.getScene('Level01Scene');
+      if (level01 && level01.scene && level01.scene.isActive()) {
+        // Update score di scene
+        if (level01.level01Score !== undefined) {
+          level01.level01Score = finalData.level01Score || 0;
+        }
+        // Update scoreText
+        if (level01.scoreText && typeof level01.scoreText.setText === 'function') {
+          level01.scoreText.setText((finalData.level01Score || 0).toString().padStart(5, '0'));
+        }
+        console.log('🎮 Scene updated with backend data');
+      }
+    }
+
+    console.log('✅ Synced progress from backend - Final data:', finalData);
+    console.log('✅ User status:', { newUser, winUser, lossUser });
+    
+    return {
+      progress: finalData,
+      newUser,
+      winUser,
+      lossUser,
+      success: true
+    };
+    
+  } catch (err) {
+    console.error('❌ Failed to sync progress from backend:', err);
+    
+    // ✅ FALLBACK: Jika backend gagal, gunakan data lokal
+    const localData = JSON.parse(localStorage.getItem(`gameData-${email}`)) || {};
+    const localProgress = localData.gameProgress || {};
+    
+    console.log('🔄 Using local fallback data:', localProgress);
+    
+    return {
+      progress: localProgress,
+      newUser: localData.newUser || false,
+      winUser: localData.winUser || false,  
+      lossUser: localData.lossUser || false,
+      success: false,
+      error: err.message
+    };
+  }
+}
+
 //======================================================================================
 const email = localStorage.getItem("email");
 if (email) {
@@ -627,6 +758,8 @@ window.updateGamePaymentStatus = function(isPaid, method = null) {
     <script src="https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js"></script>
     <script src="https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level02Scene.js"></script>
     
+    
+
    <script>
       // Agar mouse wheel di atas canvas tetap scroll halaman, walau canvas diganti/direfresh Phaser
      //Fix Canvas function addScrollToCanvas() {
@@ -737,9 +870,269 @@ window.initUserData = async function(email, userData) {
   }
 }
 
-// ========== ENHANCED SECURE PAYMENT SYSTEM ==========
+// ========== ENHANCED SECURE LOGIN & PAYMENT SYSTEM ==========
+// ✅ GLOBAL VARIABLES:
+let loginInProgress = false;
+let paymentCheckInterval = null;
+
 // Add scroll functionality to canvas
   window.addScrollToCanvas();
+
+  // ✅ ENHANCED LOGIN BUTTON WITH level01Score MANAGEMENT: WITH LAZY LOAD 
+// ✅ ENHANCED LOGIN HANDLER: ------ Mulai login handler ------------------- 
+  document.getElementById("loginBtn").onclick = async function(event) {
+  event.preventDefault();
+  event.stopPropagation();
+ 
+  const inputEmail = document.getElementById('emailInput').value.trim();
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
+  if (!inputEmail) {
+    alert("Please enter your email address!");
+    loginInProgress = false;
+    return;
+  }
+  if (!emailPattern.test(inputEmail)) {
+    alert("Please enter a valid email address!");
+    loginInProgress = false;
+    return;
+  }
+
+  if (loginInProgress) return;
+  loginInProgress = true;
+
+  const loginBtn = document.getElementById('loginBtn');
+  const originalText = loginBtn.textContent;
+  loginBtn.disabled = true;
+  loginBtn.textContent = 'Please Wait...';
+  loginBtn.style.opacity = '0.6';
+
+
+ // Register user (di index.html)
+async function registerUser(email) { 
+    try {
+  const response = await axios.post(
+    'https://backend-paypalblackhorsepuzzle.onrender.com/api/users/register',
+    { email: email.toLowerCase().trim() },
+    { timeout: 30000 }
+  );
+  const data = response.data;
+  console.log('✅ Backend email verification successful:', data.message);
+  return true;
+} catch (error) {
+ if (error.response && error.response.data) {
+  const errorData = error.response.data;
+  console.log('⚠️ Backend responded with error:', errorData.message);
+
+  // If email already exists, that's OK for login
+  if (error.response.status === 409 && errorData.message.includes('already exists')) {
+    console.log('✅ Email already registered - allowing login');
+    return true;
+  }
+
+  throw new Error(`Backend error: ${errorData.message}`);
+}
+// Tambahan error handling
+    console.error('❌ Backend verification failed:', error.message);
+    return false;
+}
+}  
+try {
+    // Proses register ke backend
+    console.log('Step 1: Registering user...');
+    const registered = await registerUser(inputEmail);
+    console.log('Step 2: Registered?', registered);
+    if (!registered) {
+      alert('Failed to register email. Please try again.');
+      return;
+    }
+
+    //localStorage.setItem("email", inputEmail);
+    console.log('📧 Attempting login with email:', inputEmail);
+    
+    console.log('Step 3: Sending verification email...');
+    // Selalu cek ke backend, kirim kode verifikasi ke email
+    await window.resendVerificationEmail(inputEmail);
+    console.log('Step 4: Showing verification box...');
+    // Tampilkan verificationBox, sembunyikan login dan logoutBtn
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("logoutBtn").style.display = "none";
+    // Tampilkan verificationBox
+    document.getElementById("verificationBox").style.zIndex = "1000";
+    document.getElementById("verificationBox").style.display = "block";
+    document.getElementById("verificationCodeInput").style.display = "inline-block";
+    document.getElementById("verifyBtn").style.display = "inline-block";
+    console.log('✅ Verification box displayed');
+  } catch (error) {
+    if (error.response && error.response.data) {
+      const errorData = error.response.data;
+    }
+   // if (window.hidePleaseWaitMessage) hidePleaseWaitMessage();
+   // console.error('❌ Login error:', error.message);
+   // alert('Login Error: ' + error.message);
+  } finally {
+    setTimeout(() => {
+      loginBtn.disabled = false;
+      loginBtn.textContent = originalText;
+      loginBtn.style.opacity = '1';
+      loginInProgress = false;
+    }, 800);
+  }
+  }
+// END OF LOGIN HANDLER 
+//--------------Batas login handler-------------------
+  
+// ✅ ENHANCED VERIFICATION HANDLER:
+ // Handler tombol Verify
+document.getElementById("verifyBtn").onclick = async function() {
+  const email = document.getElementById('emailInput').value.trim();
+  const code = document.getElementById('verificationCodeInput').value.trim();
+
+  try {
+    const response = await axios.post(
+      'https://backend-paypalblackhorsepuzzle.onrender.com/api/users/verify-email',
+      { email, verificationCode: code },
+      { timeout: 30000 }
+    );
+    const data = response.data;
+    console.log('✅ Email verification response:', data);
+
+    //if (data.emailVerified === true) {
+    if (data.user && data.user.emailVerified === true) {
+      //alert('Email verified successfully! Welcome to Black Horse Puzzle!');
+      document.getElementById("verificationCodeInput").value = "";
+      localStorage.setItem("email", email);
+      document.getElementById("verificationBox").style.display = "none";
+      document.getElementById("logoutBtn").style.display = "inline-block";
+      document.getElementById("verificationCodeInput").value = "";
+      if (window.Phaser && window.game && window.game.scene) {
+        window.game.scene.start("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/SplashScene.js");
+      }
+      if (window.showSuccessNotification) {
+        showSuccessNotification('✅ Email Verified - Welcome!');
+      }
+    } else {
+      alert('Verification failed: ' + (data.message || 'Please check your email address.'));
+    }
+  } catch (error) {
+    alert('Verification failed: ' + error.message);
+  }
+}
+
+
+//  EMAIL VERIFICATION FUNCTIONS:
+function verifyEmailFormat(email) {
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailPattern.test(email);
+}
+// EMERGENCY FIX - PASTE SEKARANG:
+console.log('🚨 FIXING DUPLICATE FUNCTION - ADDING REAL BACKEND VERIFICATION');
+console.log('Username yang dikirim:', this.username);
+
+
+async function checkEmailVerifiedFromBackend(email) {
+  try {
+    const response = await axios.post(
+      'https://backend-paypalblackhorsepuzzle.onrender.com/api/users/check-email',
+      { email: email},
+      { timeout: 30000 }
+    );
+    return response.data && response.data.emailVerified === true;
+  } catch (error) {
+    return false;
+  }
+}
+
+//RESEND VERIFICATION BUTTON HANDLER
+document.getElementById("resendVerificationBtn").onclick = async function() {
+  const email = document.getElementById('emailInput').value.trim();
+  if (!email) {
+    alert('Please enter your email address!');
+    return;
+  }
+  await window.resendVerificationEmail(email);
+};
+
+//  Create missing window.gameUtils
+window.gameUtils = {
+    validateEmail: function(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+};
+    // ✅ ENHANCED EMAIL RESEND VERIFICATION CODE
+window.resendVerificationEmail = async function(email) {
+  try {
+    const response = await axios.post(
+      'https://backend-paypalblackhorsepuzzle.onrender.com/api/users/resend-verification',
+      { email },
+      { timeout: 30000 }
+    );
+    const data = response.data;
+    if (data.success) {
+      alert('Verification code has been sent to your email. Please check your inbox or spam.');
+      console.log('✅ Resend verification success:', email);
+      return true;
+    } else {
+      alert('Failed to resend verification code. Please try again later.');
+      console.warn('❌ Resend verification failed:', data.message || 'Unknown error');
+      return false;
+    }
+  } catch (error) {
+    console.error('❌ Error resend verification:', error.message);
+    alert('An error occurred while resending the code. Please try again later.');
+    return false;
+  }
+};
+
+//  Create proper showMessage function
+window.showMessage = function(message, color = '#ff6b6b') {
+    alert(message);
+    console.log('📢 Message:', message);
+};   
+
+
+// Redefine verifyEmailWithBackend with actual backend connection
+//async function verifyEmailWithBackend(email) {
+window.verifyEmailWithBackend = async function(email) {
+  try {
+    console.log('📧 Verifying email with backend:', email);
+
+    // Step 1: Local format validation first
+    //const isValid = verifyEmailFormat(email);
+    const isValidFormat = verifyEmailFormat(email);
+    if (!isValidFormat) {
+      console.log('❌ Invalid email format');
+      return false;
+    }   
+ 
+    // Step 2: Backend verification
+    console.log('🔗 Attempting backend connection...');
+    const result = await registerUser(email);
+    if (result) {
+      return true;
+    }
+
+     // Fallback jika backend gagal
+    return false;
+    } catch (error) {
+    // Enhanced error handling with fallback
+    if (error.name === 'AbortError') {
+      console.log('⏰ Backend timeout - using fallback validation');
+    } else if (error.message.includes('Failed to Axios request')) {
+      console.log('🌐 Network error - using fallback validation');
+    } else if (error.message.includes('CORS')) {
+      console.log('🔒 CORS error - using fallback validation');
+    }
+    // FALLBACK: If backend fails but email format is valid, allow login
+    const isValidFormat = verifyEmailFormat(email);
+    if (isValidFormat) {
+      console.log('✅ Using fallback validation - email format valid');
+      return true;
+    }
+    return false;
+  }
+};
 
 // Tambahkan fungsi unlock global
 window.unlockPlayAndHideGameOver = function() {
