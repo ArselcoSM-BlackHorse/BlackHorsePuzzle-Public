@@ -1249,38 +1249,12 @@ window.addEventListener('DOMContentLoaded', async function() {
 
 });
 
+// async function handleScoreStatus(inputEmail, scoreStatus) { DIHAPUS KARENA MEMANGGIL UPDATEGAMESCORE YG SUDAH DIHAPUS YG DIPAKAI UPDATEUSERPROGRESS
 
-async function handleScoreStatus(inputEmail, scoreStatus) {
-  if (!inputEmail) {
-    console.warn('❌ Email tidak ditemukan - tidak bisa updateGameScore');
-    return;
-  }
-  if (scoreStatus.needsFavorite) {
-    //console.log('⚠️ Returning user with no level01Score - showing game over warning');
-  //showGameOverWarning(inputEmail);
-  } else if (scoreStatus.hasPlayedBefore && scoreStatus.currentScore > 0) {
-    console.log('✅ Returning user dengan level01Score:', scoreStatus.currentScore);
-    updateGameScore(inputEmail, scoreStatus.currentScore);
-  } else if (!scoreStatus.hasPlayedBefore) {
-    console.log('🆕 New user - setting initial level01Score');
-    localStorage.setItem(`score_${inputEmail}`, '0');
-    updatePlayerGameHistory(inputEmail, {
-      hasPlayedBefore: true,
-      totalGamesPlayed: 1,
-      lastPlayedDate: new Date().toISOString()
-    });
-    updateGameScore(inputEmail, 0);
-    //async function checkPaymentStatus(email) {
-    const paymentResult = await checkPaymentStatus(inputEmail);
-    startPaymentMonitoring(inputEmail);
-  }
-        //if (window.showSuccessNotification) {
-          //showSuccessNotification(`✅ Welcome new player! You have 3 points to start.`);
-        //}
-       }
-      //} 
-        if (window.Phaser && window.game && window.game.scene) {
-          window.game.scene.start("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/SplashScene.js"); //dari Level01Scene ganti ke SplashScene 
+        
+        
+if (window.Phaser && window.game && window.game.scene) {
+    window.game.scene.start("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/SplashScene.js"); //dari Level01Scene ganti ke SplashScene 
          // Tambahkan kode ini untuk menyembunyikan level01Score:
       setTimeout(() => {
       const level01 = window.game?.scene?.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
@@ -1865,88 +1839,7 @@ function waitForGameReady(callback, maxAttempts = 10) {
   checkReady();
 }
 
-// ✅ SAFE GAME UPDATE SCOREFUNCTIONS:
-async function updateGameScore(email, newScore) {
-  if (!email) {
-    console.error('❌ Email is null or undefined in updateGameScore');
-    return {
-      success: false,
-      error: 'Email is null or undefined',
-      newUser: false,
-      winUser: false,
-      lossUser: false,
-      gameProgress: {}
-    };
-  } 
-  //localStorage.setItem(`score_${email}`, newScore.toString());
-  //window.level01Score = newScore;
-  //window.playerScore = newScore;
-  localStorage.setItem(`score_${email}`, (newScore ?? 0).toString());
-  window.level01Score = newScore ?? 0;
-  window.playerScore = newScore ?? 0;
-
-  const userData = JSON.parse(localStorage.getItem(`gameData-${email}`)) || {};
-  const progress = userData.gameProgress || {};
-  const level01Completed = progress.level01Completed ?? false;
-  const level01HighScore = progress.level01HighScore ?? 0;
-  const totalPlays = progress.totalPlays ?? 0;
-  const bestTime = progress.bestTime ?? 0;  
-  const averageTime = progress.averageTime ?? 0;
-  const completionRate = progress.completionRate ?? 0;  
-  const perfectGames = progress.perfectGames ?? 0;
-  const totalAttempts = progress.totalAttempts ?? 0;
-  const completionTime = progress.completionTime ?? 0;
-  const isPerfectGame = newScore >= level01HighScore && newScore > 0
-
-  // Simpan ke backend setiap kali level01Score berubah
-  try { 
-    const res = await axios.post(
-    `https://backend-paypalblackhorsepuzzle.onrender.com/api/users/${encodeURIComponent(email)}/update-progress`,
-    {
-      email,
-      level01Completed,
-      level01Score: newScore,
-      level01HighScore,
-      totalPlays,
-      bestTime,
-      averageTime,
-      completionRate,
-      perfectGames,
-      totalAttempts,
-      completionTime,
-      isPerfectGame
-      // Tambahkan data lain jika perlu nanti untuk level01ScoreSeri2 dan seri selanjutnya
-    },
-    { timeout: 200000 }
-  );
-// Update history di localStorage
-  const history = getPlayerGameHistory(email);
-  updatePlayerGameHistory(email, {
-    highestScore: Math.max(history.highestScore, newScore),
-    lastPlayedDate: new Date().toISOString()
-  });
-// Return struktur lengkap seperti SplashScene
-    return {
-      success: res.data.success,
-      user: res.data.user,
-      newUser: res.data.newUser,
-      winUser: res.data.winUser,
-      lossUser: res.data.lossUser,
-      message: res.data.message,
-      gameProgress: res.data.user?.gameProgress || {}
-    };
-  } catch (err) {
-    console.error('❌ Update user progress error:', err);
-    return {
-      success: false,
-      error: err.message,
-      newUser: false,
-      winUser: false,
-      lossUser: false,
-      gameProgress: {}
-    };
-  }  
-}
+// UPDATEGAMESCORE DI HAPUS KARENA DI SPLASHSCENE.JS SUDAH ADA UPDATEUSERPROGRESS
 
 // ✅ SAFE PAYMENT STATUS UPDATE FUNCTION:
 function safeUpdatePaymentStatus(email) {
