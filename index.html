@@ -1692,10 +1692,10 @@ window.lockPlayAndShowGameOver = function() {
           console.log('✅ Unlocking game - User type:', userType);
           
           // === UNLOCK PLAY BUTTON ===
-          if (level01.playBtn) {
-            level01.playBtn.setInteractive();
-            level01.playBtn.setAlpha(1);
-          }
+          //if (level01.playBtn) {
+            //level01.playBtn.setInteractive();
+            //level01.playBtn.setAlpha(1);
+          //}
           
           // === UNLOCK 10 PUZZLE BUTTON ===
           if (level01.lv01Puzzle10Btn) {
@@ -2007,9 +2007,18 @@ window.showDonation = function() {
   };
 
   // Tombol PayPal redirect ke PayPal.me
-  document.getElementById('paypal-donate-btn').onclick = function() {
+  //document.getElementById('paypal-donate-btn').onclick = function() {
+    //window.open('https://paypal.me/arselco', '_blank');
+  //};
+
+  // Pastikan id di HTML: <button id="paypal-donate-btn" ...>
+const paypalBtn = document.getElementById('paypal-donate-btn');
+if (paypalBtn) {
+  paypalBtn.onclick = function() {
     window.open('https://paypal.me/arselco', '_blank');
   };
+}
+
 
   // Tombol Ko-fi tampilkan pesan proses
   document.getElementById('kofi-donate-btn').onclick = function() {
