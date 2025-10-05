@@ -348,16 +348,6 @@ window.checkPaymentStatus = async function(email) {
       }
       result = { paid: true, method: 'paypal' };
     }
-    // Check PayPal Order ID
-    //else if (urlParams.get('paypal_order_id')) {
-     // console.log('✅ PayPal Order ID detected');
-    else if (urlParams.get('paypal_paid') === '1' || urlParams.get('paypal_success') === 'true') {
-      console.log('✅ Payment detected from PayPal URL parameter');
-      if (window.safeUpdatePaymentStatus) {
-        safeUpdatePaymentStatus(true, 'paypal');
-      }
-      result = { paid: true, method: 'paypal' };
-    }
     // Check PayPal Token 
     else if (urlParams.get('token') && urlParams.get('PayerID')) {
       console.log('✅ PayPal token and PayerID detected');
@@ -701,41 +691,187 @@ document.addEventListener('visibilitychange', () => {
 });
 //================================= BATAS VISIBILITY CHANGE =================================
 // Definisikan di luar create()
-window.initUserData = async function(email, userData) {
-  // Jika belum ada data progress, ambil dari backend
-  if (!userData || !userData.gameProgress) {
-    window.getUserProgress(email).then(progressRes => {
-      if (progressRes && progressRes.progress) {
-        // Tambahkan inisialisasi level01HighScore
-        const progress = progressRes.progress;
-        const level01HighScore = progress.level01HighScore ?? 0;
-        userData = { gameProgress: progressRes.progress, level01HighScore: level01HighScore };
-        localStorage.setItem(`gameData-${email}`, JSON.stringify(userData));
-      } else {
-        // Jika backend juga kosong, inisialisasi default
-        userData = {
-          gameProgress: {
-            level01Completed: false,
-            level01Score: 0,
-            level01HighScore: 0,
-            totalPlays: 0,
-            bestTime: 0,
-            averageTime: 0,
-            completionRate: 0,
-            perfectGames: 0,
-            totalAttempts: 0,
-            completionTime: 0,
-            isPerfectGame: 0
-          }
-        };
-        localStorage.setItem(`gameData-${email}`, JSON.stringify(userData));
+window.initUserData = async function(email, userData = null) {
+try {
+    console.log(`🔄 Initializing user data for: ${email}`);
+    
+    // ✅ 1. SELALU AMBIL DATA TERBARU DARI BACKEND DULU
+    const progressRes = await this.getUserProgress(email);
+    
+    if (progressRes && progressRes.success && progressRes.progress) {
+      // ✅ 2. UPDATE SEMUA INSTANCE PROPERTIES DARI BACKEND
+      const progress = progressRes.progress;
+      
+      // Update score dan progress dari backend
+      this.level01Score = progress.level01Score || 0;
+      this.starAlpha = progress.starAlpha || 0;
+      this.level01HighScore = progress.level01HighScore || 0;
+      this.totalPlays = progress.totalPlays || 0;
+      this.bestTime = progress.bestTime || 0;
+      this.averageTime = progress.averageTime || 0;
+      this.completionRate = progress.completionRate || 0;
+      this.perfectGames = progress.perfectGames || false;
+      this.totalAttempts = progress.totalAttempts || 0;
+      this.completionTime = progress.completionTime || 0;
+      this.isPerfectGame = progress.isPerfectGame || false;
+      this.level01Completed = progress.level01Completed || false;
+    // ✅ 3. UPDATE USER STATUS DARI BACKEND RESPONSE
+      this.newUser = progressRes.newUser || false;
+      this.winUser = progressRes.winUser || false;
+      this.lossUser = progressRes.lossUser || false;
+      this.isGameOver = progressRes.isGameOver || false;
+      
+      // ✅ 4. UPDATE WINDOW GLOBAL VARIABLES
+      window.level01Score = this.level01Score;
+      window.starAlpha = this.starAlpha;
+      
+      // ✅ 5. UPDATE UI JIKA SUDAH ADA
+      if (this.scoreText) {
+        this.scoreText.setText(this.level01Score.toString().padStart(5, '0'));
       }
-      // Update score di scene
-      window.level01Score = userData.gameProgress.level01Score || 0;
-    });
-  } else {
-    // Jika sudah ada, langsung pakai
-    window.level01Score = userData.gameProgress.level01Score || 0;
+      if (this.starBronzeBlackHorse && this.starAlpha > 0) {
+        this.starBronzeBlackHorse.setAlpha(this.starAlpha);
+      } 
+    // ✅ 6. SYNC KE LOCALSTORAGE SEBAGAI BACKUP
+      const userData = {
+        gameProgress: progress,
+        newUser: progressRes.newUser,
+        winUser: progressRes.winUser,
+        lossUser: progressRes.lossUser,
+        isGameOver: progressRes.isGameOver,
+        lastSyncFromBackend: new Date().toISOString(),
+        backendSyncSuccess: true
+      };
+      localStorage.setItem(`gameData-${email}`, JSON.stringify(userData));
+      
+      console.log(`✅ User data initialized from backend:`, {
+        level01Score: this.level01Score,
+        totalPlays: this.totalPlays,
+        newUser: this.newUser,
+        winUser: this.winUser,
+        lossUser: this.lossUser,
+        isGameOver: this.isGameOver
+      });
+    return {
+        success: true,
+        source: 'backend',
+        progress: progress,
+        userStatus: {
+          newUser: this.newUser,
+          winUser: this.winUser,
+          lossUser: this.lossUser,
+          isGameOver: this.isGameOver
+        }
+      };
+      
+    } else {
+      console.warn('❌ Backend response invalid, using fallback initialization');
+      throw new Error('Backend response invalid');
+    }
+    
+  } catch (error) {
+    console.warn('❌ Backend initialization failed, using localStorage fallback:', error);
+    
+    // ✅ 7. FALLBACK KE LOCALSTORAGE + DEFAULT VALUES
+    let userData = JSON.parse(localStorage.getItem(`gameData-${email}`)) || {};
+    
+    if (userData.gameProgress) {
+      // Update dari localStorage yang ada
+      this.level01Score = userData.gameProgress.level01Score || 0;
+      this.starAlpha = userData.gameProgress.starAlpha || 0;
+      this.level01HighScore = userData.gameProgress.level01HighScore || 0;
+      this.totalPlays = userData.gameProgress.totalPlays || 0;
+      
+     // Kalkulasi user status dari localStorage (konsisten dengan backend)
+      this.newUser = !userData.gameProgress || userData.gameProgress.totalPlays === 0;
+      this.winUser = userData.gameProgress && userData.gameProgress.totalPlays >= 1 && (userData.gameProgress.level01Score || 0) > 0;
+      this.lossUser = userData.gameProgress && userData.gameProgress.totalPlays >= 3 && (userData.gameProgress.level01Score || 0) === 0;
+      this.isGameOver = this.lossUser;
+      
+      console.log(`📥 User data loaded from localStorage fallback:`, {
+        level01Score: this.level01Score,
+        totalPlays: this.totalPlays,
+        newUser: this.newUser,
+        winUser: this.winUser,
+        lossUser: this.lossUser
+      });
+    } else {
+      // ✅ 8. DEFAULT INITIALIZATION UNTUK USER BARU
+      this.level01Score = 0;
+      this.starAlpha = 0;
+      this.level01HighScore = 0;
+      this.totalPlays = 0;
+      this.bestTime = 0;
+      this.averageTime = 0;
+      this.completionRate = 0;
+      this.perfectGames = false;
+      this.totalAttempts = 0;
+      this.completionTime = 0;
+      this.isPerfectGame = false;
+      this.level01Completed = false;
+      
+      // User status untuk user baru
+      this.newUser = true;
+      this.winUser = false;
+      this.lossUser = false;
+      this.isGameOver = false;
+      
+    // ✅ 9. SAVE DEFAULT DATA KE LOCALSTORAGE DAN BACKEND
+      userData = {
+        gameProgress: {
+          level01Completed: false,
+          level01Score: 0,
+          level01HighScore: 0,
+          totalPlays: 0,
+          bestTime: 0,
+          averageTime: 0,
+          completionRate: 0,
+          perfectGames: false,
+          totalAttempts: 0,
+          completionTime: 0,
+          isPerfectGame: false,
+          starAlpha: 0
+        },
+        newUser: true,
+        winUser: false,
+        lossUser: false,
+        isGameOver: false,
+        initializedFromDefault: true,
+        lastSyncFromBackend: new Date().toISOString()
+      };
+      localStorage.setItem(`gameData-${email}`, JSON.stringify(userData));
+      
+      // ✅ 10. SYNC DEFAULT DATA KE BACKEND
+      try {
+        await this.updateUserProgress(email, userData.gameProgress);
+        console.log(`✅ Default user data synced to backend for new user: ${email}`);
+      } catch (syncError) {
+        console.warn('❌ Failed to sync default data to backend:', syncError);
+      }
+      
+      console.log(`🆕 New user initialized with default data: ${email}`);
+    }
+    
+    // ✅ 11. UPDATE WINDOW GLOBAL DARI FALLBACK/DEFAULT
+    window.level01Score = this.level01Score;
+    window.starAlpha = this.starAlpha;
+    
+    // Update UI jika sudah ada
+    if (this.scoreText) {
+      this.scoreText.setText(this.level01Score.toString().padStart(5, '0'));
+    }
+    
+    return {
+      success: true,
+      source: 'fallback',
+      progress: userData.gameProgress,
+      userStatus: {
+        newUser: this.newUser,
+        winUser: this.winUser,
+        lossUser: this.lossUser,
+        isGameOver: this.isGameOver
+      }
+    };
   }
 }
 
