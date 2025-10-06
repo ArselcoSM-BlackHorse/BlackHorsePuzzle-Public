@@ -274,13 +274,26 @@ if (!userData.gameProgress) {
 }
 //======================================================================================
 
+// ✅ DYNAMIC BACKEND URL FUNCTION FOR FRONTEND REPOSITORY
+function getBackendUrl() {
+  const hostname = window.location.hostname;
+  
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'http://localhost:3000'; // Local backend for development
+  } else if (hostname.includes('onrender.com') || hostname.includes('arselco.com')) {
+    return 'https://backend-paypalblackhorsepuzzle.onrender.com'; // Production backend
+  } else {
+    return 'https://backend-paypalblackhorsepuzzle.onrender.com'; // Fallback
+  }
+}
+
 // Fungsi cek status pembayaran dari backend (lengkap)
 window.checkPaymentStatusFromBackend = async function(email) {
   try {
     console.log('🔍 Checking payment status for:', email);
     //const encodedEmail = encodeURIComponent(email);
     const res = await axios.post(
-      `https://backend-paypalblackhorsepuzzle.onrender.com/api/${encodeURIComponent(email)}/payment-status`,
+      `${getBackendUrl()}/api/${encodeURIComponent(email)}/payment-status`,
       { }, // Send email in POST body
       {timeout: 200000}
     );
@@ -632,27 +645,60 @@ window.updateGamePaymentStatus = function(isPaid, method = null) {
      }
     } 
 
-// SEANBEACON menyimpan level01Score dan waktu ke backend saat sebelum halaman ditutup
+// ENHANCED BEACON - Save level01Score dan progress ke backend saat beforeunload
  window.addEventListener('beforeunload', () => {
   const email = localStorage.getItem('email');
-  //const level01Score = window.Level01Scene?.instance?.level01Score || 0; // pastikan ambil level01Score terbaru
-  const level01Score = localStorage.getItem(`score_${email}`) || 0;
-  const time = window.Level01Scene?.instance?.timeElapsed || 0;
   if (!email) return;
 
-  console.log('📤 Sending level01Score via sendBeacon:', level01Score, time);
+  // ✅ AMBIL DATA DARI WINDOW GLOBAL DAN LOCALSTORAGE
+  const level01Score = window.level01Score || parseInt(localStorage.getItem(`score_${email}`)) || 0;
+  const starAlpha = window.starAlpha || 0;
+  const totalPlays = window.totalPlays || 0;
+  
+  // ✅ AMBIL TIME DARI SCENE INSTANCE JIKA ADA
+  let timeElapsed = 0;
+  if (window.game && window.game.scene && window.game.scene.getScene) {
+    const level01 = window.game.scene.getScene("Level01Scene");
+    if (level01 && typeof level01.timeElapsed !== 'undefined') {
+      timeElapsed = level01.timeElapsed;
+    }
+  }
 
+  console.log('📤 Sending enhanced data via sendBeacon:', {
+    level01Score, starAlpha, totalPlays, timeElapsed
+  });
+
+  // ✅ ENHANCED PROGRESS DATA WITH DYNAMIC URL
+  const progress = {
+    email,
+    level01Score: level01Score,
+    starAlpha: starAlpha,
+    totalPlays: totalPlays,
+    level01Completed: level01Score > 0,
+    completionTime: timeElapsed,
+    isPerfectGame: false,
+    isGameOver: window.isGameOver || false,
+    lossUser: window.lossUser || false,
+    gameOverTimestamp: window.isGameOver ? new Date().toISOString() : null,
+    saveSource: 'beforeunload_index'
+  };
+
+  // ✅ DYNAMIC URL DETECTION FOR FRONTEND REPOSITORY
+  const hostname = window.location.hostname;
+  let backendUrl = '';
+  
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    backendUrl = 'http://localhost:3000'; // Local backend URL for development
+  } else if (hostname.includes('onrender.com') || hostname.includes('arselco.com')) {
+    backendUrl = 'https://backend-paypalblackhorsepuzzle.onrender.com'; // Production backend URL
+  } else {
+    backendUrl = 'https://backend-paypalblackhorsepuzzle.onrender.com'; // Fallback
+  }
 
   navigator.sendBeacon(
-  `https://backend-paypalblackhorsepuzzle.onrender.com/api/users/${encodeURIComponent(email)}/update-progress`,
-  new Blob([JSON.stringify({
-    email,
-    level01Completed: false,
-    level01Score: level01Score,    // ✅ gunakan level01Score dari instance
-    completionTime: time,        // ✅ gunakan time dari instance
-    isPerfectGame: false
-  })], { type: 'text/plain' })
- );
+    `${backendUrl}/api/users/${encodeURIComponent(email)}/update-progress`,
+    JSON.stringify(progress)
+  );
  });
  
 //=================================== BATAS SENDBEACON ====================================
