@@ -295,7 +295,7 @@ window.checkPaymentStatusFromBackend = async function(email) {
     const res = await axios.post(
       `${getBackendUrl()}/api/${encodeURIComponent(email)}/payment-status`,
       { }, // Send email in POST body
-      {timeout: 200000}
+      {timeout: 30000}
     );
     const data = res.data;
     console.log('💳 Payment status response:', data);
@@ -964,7 +964,7 @@ async function registerUser(email) {
   const response = await axios.post(
     'https://backend-paypalblackhorsepuzzle.onrender.com/api/users/register',
     { email: email.toLowerCase().trim() },
-    { timeout: 200000 }
+    { timeout: 30000 }
   );
   const data = response.data;
   console.log('✅ Backend email verification successful:', data.message);
@@ -1020,6 +1020,9 @@ try {
    // if (window.hidePleaseWaitMessage) hidePleaseWaitMessage();
    // console.error('❌ Login error:', error.message);
    // alert('Login Error: ' + error.message);
+     // Sembunyikan verificationBox, tampilkan loginBox
+  document.getElementById("verificationBox").style.display = "none";
+  document.getElementById("loginBox").style.display = "block";
   } finally {
     setTimeout(() => {
       loginBtn.disabled = false;
@@ -1042,7 +1045,7 @@ document.getElementById("verifyBtn").onclick = async function() {
     const response = await axios.post(
       'https://backend-paypalblackhorsepuzzle.onrender.com/api/users/verify-email',
       { email, verificationCode: code },
-      { timeout: 200000 }
+      { timeout: 30000 }
     );
     const data = response.data;
     console.log('✅ Email verification response:', data);
@@ -1085,7 +1088,7 @@ async function checkEmailVerifiedFromBackend(email) {
     const response = await axios.post(
       'https://backend-paypalblackhorsepuzzle.onrender.com/api/users/check-email',
       { email: email},
-      { timeout: 200000 }
+      { timeout: 30000 }
     );
     return response.data && response.data.emailVerified === true;
   } catch (error) {
@@ -1116,7 +1119,7 @@ window.resendVerificationEmail = async function(email) {
     const response = await axios.post(
       'https://backend-paypalblackhorsepuzzle.onrender.com/api/users/resend-verification',
       { email },
-      { timeout: 200000 }
+      { timeout: 30000 }
     );
     const data = response.data;
     if (data.success) {
@@ -1543,7 +1546,7 @@ async function createPayPalOrder(email, amount, message = 'Black Horse Puzzle Su
         amount,
         message
       },
-      { timeout: 200000 }
+      { timeout: 30000 }
     );
     const data = response.data;
     if (data.success && data.paypalOrderId && data.approvalUrl) {
@@ -1569,7 +1572,7 @@ async function capturePayPalOrder(paypalOrderId, email) {
     const response = await axios.post(
       `https://backend-paypalblackhorsepuzzle.onrender.com/api/capture-order/${paypalOrderId}`,
       { email },
-      { timeout: 200000 }
+      { timeout: 30000 }
     );
     const data = response.data;
     if (data.success && data.paypalOrderId === paypalOrderId) {
@@ -1608,7 +1611,7 @@ async function verifyPayPalToken(token, payerID, email) {
     const response = await axios.post(
       'https://backend-paypalblackhorsepuzzle.onrender.com/api/verify-paypal-token',
       { token, payerID, email },
-      { timeout: 200000 } // timeout dalam ms
+      { timeout: 30000 } // timeout dalam ms
     );
 
     const data = response.data;
@@ -1638,7 +1641,7 @@ async function verifyPayPalOrder(orderId, email) {
     const response = await axios.post(
       'https://backend-paypalblackhorsepuzzle.onrender.com/api/verify-paypal',
       {paypalOrderId: orderId, email },
-      { timeout: 200000 }
+      { timeout: 30000 }
     );
 
     const data = response.data;
