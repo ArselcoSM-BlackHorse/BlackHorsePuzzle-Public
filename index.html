@@ -1202,17 +1202,17 @@ console.log('✅ REAL BACKEND VERIFICATION READY - CONNECT TO RENDER.COM');
     // ✅ Tambahkan ini untuk ambil status pembayaran
     const paymentData = JSON.parse(localStorage.getItem(`gameData-${email}`) || '{}');
     const isPaid = paymentData.isPaid === true;
-    const progress = userData.gameProgress || null;
+    //const progress = userData.gameProgress || null;
 
     // ✅ PROPER USER CLASSIFICATION:
-    //const newUser = totalPlays === 0;  // Only 0 plays = new user // yang lama
+    //const newUser = totalPlays === 0;  // Only 0 plays = new user
     //const winUser = totalPlays >= 1 && currentScore > 0;  // 1 dst plays = active user
     //const lossUser = totalPlays >= 3 && currentScore === 0 && !isPaid;  // 3+ plays, no score, no payment
-    const userStatus = {
-    newUser: !progress || progress.totalPlays === 0,
-    winUser: progress && progress.totalPlays >= 1 && (progress.level01Score || 0) > 0,
-    lossUser: progress && progress.totalPlays >= 3 && (progress.level01Score || 0) === 0
-    };
+    //const userStatus = {
+    const newUser = !progress || progress.totalPlays === 0;
+    const winUser = progress && progress.totalPlays >= 1 && (progress.level01Score || 0) > 0;
+    const lossUser = progress && progress.totalPlays >= 3 && (progress.level01Score || 0) === 0;
+    //};
 
     console.log('👤 User classification:', { 
       newUser: !progress || progress.totalPlays === 0,
@@ -1877,11 +1877,11 @@ window.unlockPlayAndHideGameOver = function() {
           level01.scene.isActive()) {
         
         // ✅ PROPER LOGIC: New, Active, or Paid Users get access
-        if (userStatus.newUser || userStatus.winUser || userStatus.lossUser) {
+        if (newUser || winUser || lossUser) {
           let userType = 'UNKNOWN';
-          if (userStatus.newUser) userType = 'NEW';
-          else if (userStatus.winUser) userType = 'ACTIVE';
-          else if (userStatus.lossUser) userType = 'LOSS';
+          if (newUser) userType = 'NEW';
+          else if (winUser) userType = 'ACTIVE';
+          else if (lossUser) userType = 'LOSS';
           console.log('✅ Unlocking game - User type:', userType);
           
           // === UNLOCK PLAY BUTTON ===
