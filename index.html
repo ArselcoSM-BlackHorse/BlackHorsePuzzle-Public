@@ -1785,7 +1785,7 @@ function stopPaymentMonitoring() {
 // LOCK PLAY & SHOW GAME OVER FUNCTION
 window.lockPlayAndShowGameOver = function() {
   setTimeout(() => {
-    const level01 = window.game?.scene?.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
+    const level01 = window.game?.scene?.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene");
     if (level01) {
       
       if (level01.playBtn) {
@@ -1809,7 +1809,7 @@ window.lockPlayAndShowGameOver = function() {
 // UNLOCK GLOBAL FUNCTION & HIDE GAME OVER PANEL
 window.unlockPlayAndHideGameOver = function() {
   // Dapatkan scene Level01Scene
-  const level01 = window.game && window.game.scene && window.game.scene.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
+  const level01 = window.game && window.game.scene && window.game.scene.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene");
   if (!level01) return;
 
   // Aktifkan tombol Play & 10 Puzzle
