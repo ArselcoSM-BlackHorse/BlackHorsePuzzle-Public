@@ -1876,11 +1876,11 @@ window.unlockPlayAndHideGameOver = function() {
           level01.scene.isActive()) {
         
         // ✅ PROPER LOGIC: New, Active, or Paid Users get access
-        if (newUser || winUser || lossUser) {
+        if (userStatus.newUser || userStatus.winUser || userStatus.lossUser) {
           let userType = 'UNKNOWN';
-          if (newUser) userType = 'NEW';
-          else if (winUser) userType = 'ACTIVE';
-          else if (lossUser) userType = 'LOSS';
+          if (userStatus.newUser) userType = 'NEW';
+          else if (userStatus.winUser) userType = 'ACTIVE';
+          else if (userStatus.lossUser) userType = 'LOSS';
           console.log('✅ Unlocking game - User type:', userType);
           
           // === UNLOCK PLAY BUTTON ===
