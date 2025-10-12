@@ -1202,7 +1202,8 @@ console.log('✅ REAL BACKEND VERIFICATION READY - CONNECT TO RENDER.COM');
     // ✅ Tambahkan ini untuk ambil status pembayaran
     const paymentData = JSON.parse(localStorage.getItem(`gameData-${email}`) || '{}');
     const isPaid = paymentData.isPaid === true;
-    
+    const progress = userData.gameProgress || null;
+
     // ✅ PROPER USER CLASSIFICATION:
     //const newUser = totalPlays === 0;  // Only 0 plays = new user // yang lama
     //const winUser = totalPlays >= 1 && currentScore > 0;  // 1 dst plays = active user
