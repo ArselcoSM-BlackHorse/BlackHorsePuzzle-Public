@@ -1061,7 +1061,9 @@ document.getElementById("verifyBtn").onclick = async function() {
       document.getElementById("logoutBtn").style.display = "inline-block";
       document.getElementById("verificationCodeInput").value = "";
       if (window.Phaser && window.game && window.game.scene) {
-        window.game.scene.start("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/SplashScene.js");
+        //window.game.scene.start("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/SplashScene.js");
+        window.game.scene.start("SplashScene");
+        console.log('🚀 Starting SplashScene after verification');
       }
       if (window.showSuccessNotification) {
         showSuccessNotification('✅ Email Verified - Welcome!');
@@ -1453,8 +1455,9 @@ window.addEventListener('DOMContentLoaded', async function() {
 // async function handleScoreStatus(inputEmail, scoreStatus) { DIHAPUS KARENA MEMANGGIL UPDATEGAMESCORE YG SUDAH DIHAPUS YG DIPAKAI UPDATEUSERPROGRESS
                
 if (window.Phaser && window.game && window.game.scene) {
-    window.game.scene.start("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/SplashScene.js"); //dari Level01Scene ganti ke SplashScene 
-         // Tambahkan kode ini untuk menyembunyikan level01Score:
+    //window.game.scene.start("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/SplashScene.js"); //dari Level01Scene ganti ke SplashScene 
+    window.game.scene.start("SplashScene");
+    // Tambahkan kode ini untuk menyembunyikan level01Score:
       setTimeout(() => {
       //const level01 = window.game?.scene?.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
       const level01 = window.game.scene.getScene("Level01Scene");
@@ -1519,7 +1522,8 @@ if (window.Phaser && window.game && window.game.scene) {
       
       setTimeout(() => {
         //if (window.Phaser && window.game && window.game.scene) {
-        window.game.scene.start("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/SplashScene.js");
+        //window.game.scene.start("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/SplashScene.js");
+        window.game.scene.start("SplashScene");
       }, 1500);
     }
     
@@ -1763,7 +1767,8 @@ async function performSecureLogout() {
       
       // Return to SplashScene
       setTimeout(() => {
-        window.game.scene.start("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/SplashScene.js");
+        //window.game.scene.start("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/SplashScene.js");
+        window.game.scene.start("SplashScene");
         document.getElementById("loginBtn").disabled = false;
         console.log('🏠 Logout complete - Returned to SplashScene');
       }, 500);
