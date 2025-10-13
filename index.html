@@ -766,11 +766,13 @@ try {
       this.newUser = progressRes.newUser || false;
       this.winUser = progressRes.winUser || false;
       this.lossUser = progressRes.lossUser || false;
-      this.isGameOver = progressRes.isGameOver || false;
+      this.isGameOver = progressRes.isGameOver || this.lossUser;
       
       // ✅ 4. UPDATE WINDOW GLOBAL VARIABLES
       window.level01Score = this.level01Score;
       window.starAlpha = this.starAlpha;
+
+      
       
       // ✅ 5. UPDATE UI JIKA SUDAH ADA
       if (this.scoreText) {
@@ -1255,39 +1257,39 @@ console.log('✅ REAL BACKEND VERIFICATION READY - CONNECT TO RENDER.COM');
 
  // ✅ GET USER CLASSIFICATION:
     //const email = localStorage.getItem("email"); pasang di atas dekat pemanggil initUserData
-    const history = getPlayerGameHistory(email);
-    const currentScore = parseInt(localStorage.getItem(`score_${email}`) || 0);
-    const totalPlays = history.totalGamesPlayed || 0;
+//    const history = getPlayerGameHistory(email);
+//    const currentScore = parseInt(localStorage.getItem(`score_${email}`) || 0);
+//    const totalPlays = history.totalGamesPlayed || 0;
 
     // ✅ Tambahkan ini untuk ambil status pembayaran
-    const paymentData = JSON.parse(localStorage.getItem(`gameData-${email}`) || '{}');
-    const isPaid = paymentData.isPaid === true;
-    const progress = userData.gameProgress || null;
+//    const paymentData = JSON.parse(localStorage.getItem(`gameData-${email}`) || '{}');
+//    const isPaid = paymentData.isPaid === true;
+//    const progress = userData.gameProgress || null;
 
     // ✅ PROPER USER CLASSIFICATION:
     //const newUser = totalPlays === 0;  // Only 0 plays = new user
     //const winUser = totalPlays >= 1 && currentScore > 0;  // 1 dst plays = active user
     //const lossUser = totalPlays >= 3 && currentScore === 0 && !isPaid;  // 3+ plays, no score, no payment
     //const userStatus = {
-    const newUser = !progress || progress.totalPlays === 0;
-    const winUser = progress && progress.totalPlays >= 1 && (progress.level01Score || 0) > 0;
-    const lossUser = progress && progress.totalPlays >= 3 && (progress.level01Score || 0) === 0;
+//    const newUser = !progress || progress.totalPlays === 0;
+//    const winUser = progress && progress.totalPlays >= 1 && (progress.level01Score || 0) > 0;
+//    const lossUser = progress && progress.totalPlays >= 3 && (progress.level01Score || 0) === 0;
     //};
 
-    console.log('👤 User classification:', { 
-      newUser: !progress || progress.totalPlays === 0,
-      winUser: progress && progress.totalPlays >= 1 && (progress.level01Score || 0) > 0,
-      lossUser: progress && progress.totalPlays >= 3 && (progress.level01Score || 0) === 0
-    });
+//    console.log('👤 User classification:', { 
+//      newUser: !progress || progress.totalPlays === 0,
+//      winUser: progress && progress.totalPlays >= 1 && (progress.level01Score || 0) > 0,
+//      lossUser: progress && progress.totalPlays >= 3 && (progress.level01Score || 0) === 0
+//    });
 
-    console.log('👤 User classification:', { 
-      newUser: newUser,
-      winUser: winUser,
-      lossUser: lossUser,
-      currentScore, 
-      totalPlays, 
-      isPaid 
-    });
+//    console.log('👤 User classification:', { 
+//      newUser: newUser,
+//      winUser: winUser,
+//      lossUser: lossUser,
+//      currentScore, 
+//      totalPlays, 
+//      isPaid 
+//    });
     
    //✅ UPDATE GAME OVER STATE:
     if (isPaid) {
