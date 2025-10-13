@@ -711,8 +711,9 @@ document.addEventListener('visibilitychange', () => {
     // Jika ada timeElapsed yang valid, ambil dari scene, jika tidak, pakai 0
     let time = 0;
     if (window.game && window.game.scene && window.game.scene.getScene) {
-      const level01 = window.game.scene.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
-      if (level01 && typeof level01.timeElapsed !== 'undefined') {
+      //const level01 = window.game.scene.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
+      const level01 = window.game.scene.getScene("Level01Scene");
+     if (level01 && typeof level01.timeElapsed !== 'undefined') {
         time = level01.timeElapsed;
       }
     }
@@ -1189,6 +1190,63 @@ window.verifyEmailWithBackend = async function(email) {
 };
 
 
+// UNLOCK GLOBAL FUNCTION & HIDE GAME OVER PANEL
+window.unlockPlayAndHideGameOver = function() {
+  // Dapatkan scene Level01Scene
+  //const level01 = window.game && window.game.scene && window.game.scene.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
+  const level01 = window.game.scene.getScene("Level01Scene");
+  if (!level01) return;
+
+  // Aktifkan tombol Play & 10 Puzzle
+  if (level01.playBtn) {
+    level01.playBtn.setInteractive();
+    level01.playBtn.setAlpha(1);
+  }
+  if (level01.lv01Puzzle10Btn) {
+    level01.lv01Puzzle10Btn.setInteractive();
+    level01.lv01Puzzle10Btn.setAlpha(1);
+  }
+
+  // Hilangkan panel Game Over jika ada
+  if (level01.gameOverReturnElements) {
+    level01.gameOverReturnElements.forEach(el => el && el.destroy());
+    level01.gameOverReturnElements = null;
+  }
+  if (level01.gameOverImg) { //Tidak ada pakai Img lagi
+    level01.gameOverImg.destroy();
+    level01.gameOverImg = null;
+  }
+
+  // Hapus panel konfirmasi pembayaran jika ada (line 3342, 3346)
+  if (level01.payPanel) {
+    level01.payPanel.destroy();
+    level01.payPanel = null;
+  }
+  if (level01.payText) {
+    level01.payText.destroy();
+    level01.payText = null;
+  }
+  if (level01.payQR) {
+    level01.payQR.destroy();
+    level01.payQR = null;
+  }
+  if (level01.payBtn) {
+    level01.payBtn.destroy();
+    level01.payBtn = null;
+  }
+  if (level01.cancelBtn) {
+    level01.cancelBtn.destroy();
+    level01.cancelBtn = null;
+  }
+
+  // Reset flag Game Over
+  level01.isGameOver = false;
+  level01.isGameOverClosed = false;
+
+  // (Opsional) Log
+  console.log('✅ Game unlocked: Play & Puzzle enabled, Game Over & payment panel hidden');
+};
+
 
 // ✅ ENHANCED REAL BACKEND VERIFICATION READY
 console.log('✅ REAL BACKEND VERIFICATION READY - CONNECT TO RENDER.COM');
@@ -1398,7 +1456,8 @@ if (window.Phaser && window.game && window.game.scene) {
     window.game.scene.start("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/SplashScene.js"); //dari Level01Scene ganti ke SplashScene 
          // Tambahkan kode ini untuk menyembunyikan level01Score:
       setTimeout(() => {
-      const level01 = window.game?.scene?.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
+      //const level01 = window.game?.scene?.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
+      const level01 = window.game.scene.getScene("Level01Scene");
       if (level01 && level01.scoreText && typeof level01.scoreText.setVisible === 'function') {
         level01.scoreText.setVisible(false);
       }
@@ -1445,7 +1504,8 @@ if (window.Phaser && window.game && window.game.scene) {
     if (window.Phaser && window.game && window.game.scene) {
       window.game.scene.scenes.forEach(scene => scene.scene.restart());
       
-      const level01 = window.game.scene.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
+      //const level01 = window.game.scene.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
+      const level01 = window.game.scene.getScene("Level01Scene");
       if (level01 && level01.playBtn) {
         level01.playBtn.disableInteractive();
         level01.playBtn.setAlpha(0.5);
@@ -1539,7 +1599,8 @@ async function capturePayPalOrder(paypalOrderId, email) {
       //localStorage.setItem(`score_${email}`, "0");
       // Unlock fitur game jika scene aktif
       if (window.Level01Scene && typeof window.Level01Scene.prototype.unlockGameAfterPurchase === 'function') {
-        const scene = window.game && window.game.scene && window.game.scene.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
+        //const scene = window.game && window.game.scene && window.game.scene.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
+        const level01 = window.game.scene.getScene("Level01Scene");
         if (scene && typeof scene.unlockGameAfterPurchase === 'function') {
           scene.unlockGameAfterPurchase();
         }
@@ -1689,7 +1750,8 @@ async function performSecureLogout() {
       });
       
       // Disable play button
-      const level01 = window.game.scene.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
+      //const level01 = window.game.scene.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
+      const level01 = window.game.scene.getScene("Level01Scene");
       if (level01 && level01.playBtn) {
         level01.playBtn.disableInteractive();
         level01.playBtn.setAlpha(0.5);
@@ -1738,7 +1800,8 @@ function stopPaymentMonitoring() {
 
   // UPDATE SCORE TEXT DI LEVEL01SCENE//  (format 00000)
   if (window.Phaser && window.game && window.game.scene && window.game.scene.getScene) {
-    const level01 = window.game.scene.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
+    //const level01 = window.game.scene.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
+    const level01 = window.game.scene.getScene("Level01Scene");
     if (level01 && level01.scene && level01.scene.isActive && level01.scene.isActive()) {
       if (typeof level01.level01Score !== 'undefined') {
         level01.level01Score = newScore;
@@ -1755,7 +1818,8 @@ function stopPaymentMonitoring() {
       }); 
       //if (isGameOver) {
        setTimeout(() => {
-       const level01 = window.game?.scene?.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
+       //const level01 = window.game?.scene?.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
+       const level01 = window.game.scene.getScene("Level01Scene");
        if (level01) {
         // non aktif playbtn (burem)
         if (level01.playBtn) {
@@ -1785,7 +1849,8 @@ function stopPaymentMonitoring() {
 // LOCK PLAY & SHOW GAME OVER FUNCTION
 window.lockPlayAndShowGameOver = function() {
   setTimeout(() => {
-    const level01 = window.game?.scene?.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene");
+    //const level01 = window.game?.scene?.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
+    const level01 = window.game.scene.getScene("Level01Scene");
     if (level01) {
       
       if (level01.playBtn) {
@@ -1806,61 +1871,6 @@ window.lockPlayAndShowGameOver = function() {
   });
 }
   
-// UNLOCK GLOBAL FUNCTION & HIDE GAME OVER PANEL
-window.unlockPlayAndHideGameOver = function() {
-  // Dapatkan scene Level01Scene
-  const level01 = window.game && window.game.scene && window.game.scene.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene");
-  if (!level01) return;
-
-  // Aktifkan tombol Play & 10 Puzzle
-  if (level01.playBtn) {
-    level01.playBtn.setInteractive();
-    level01.playBtn.setAlpha(1);
-  }
-  if (level01.lv01Puzzle10Btn) {
-    level01.lv01Puzzle10Btn.setInteractive();
-    level01.lv01Puzzle10Btn.setAlpha(1);
-  }
-
-  // Hilangkan panel Game Over jika ada
-  if (level01.gameOverReturnElements) {
-    level01.gameOverReturnElements.forEach(el => el && el.destroy());
-    level01.gameOverReturnElements = null;
-  }
-  //if (level01.gameOverImg) { //Tidak ada pakai Img lagi
-    //level01.gameOverImg.destroy();
-    //level01.gameOverImg = null;
-  //}
-
-  // Hapus panel konfirmasi pembayaran jika ada (line 3342, 3346)
-  if (level01.payPanel) {
-    level01.payPanel.destroy();
-    level01.payPanel = null;
-  }
-  if (level01.payText) {
-    level01.payText.destroy();
-    level01.payText = null;
-  }
-  if (level01.payQR) {
-    level01.payQR.destroy();
-    level01.payQR = null;
-  }
-  if (level01.payBtn) {
-    level01.payBtn.destroy();
-    level01.payBtn = null;
-  }
-  if (level01.cancelBtn) {
-    level01.cancelBtn.destroy();
-    level01.cancelBtn = null;
-  }
-
-  // Reset flag Game Over
-  level01.isGameOver = false;
-  level01.isGameOverClosed = false;
-
-  // (Opsional) Log
-  console.log('✅ Game unlocked: Play & Puzzle enabled, Game Over & payment panel hidden');
-};
 
     // ✅ COMPREHENSIVE SAFETY CHECK:
     if (window.Phaser && 
@@ -1869,8 +1879,8 @@ window.unlockPlayAndHideGameOver = function() {
         window.game.scene.getScene &&
         typeof window.game.scene.getScene === 'function') {
       
-      const level01 = window.game.scene.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene");
-      
+      //const level01 = window.game.scene.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
+      const level01 = window.game.scene.getScene("Level01Scene");
       if (level01 && 
           level01.scene && 
           level01.scene.isActive &&
@@ -2005,8 +2015,8 @@ function waitForGameReady(callback, maxAttempts = 10) {
         window.game.scene.getScene &&
         typeof window.game.scene.getScene === 'function') {
 
-      const level01 = window.game.scene.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
-
+      //const level01 = window.game.scene.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
+      const level01 = window.game.scene.getScene("Level01Scene");
       if (level01 && level01.scene && level01.scene.isActive) {
         console.log('✅ Game ready - executing callback');
         completed = true;
