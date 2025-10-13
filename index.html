@@ -1827,10 +1827,10 @@ window.unlockPlayAndHideGameOver = function() {
     level01.gameOverReturnElements.forEach(el => el && el.destroy());
     level01.gameOverReturnElements = null;
   }
-  if (level01.gameOverImg) { //Tidak ada pakai Img lagi
-    level01.gameOverImg.destroy();
-    level01.gameOverImg = null;
-  }
+  //if (level01.gameOverImg) { //Tidak ada pakai Img lagi
+    //level01.gameOverImg.destroy();
+    //level01.gameOverImg = null;
+  //}
 
   // Hapus panel konfirmasi pembayaran jika ada (line 3342, 3346)
   if (level01.payPanel) {
@@ -1869,7 +1869,7 @@ window.unlockPlayAndHideGameOver = function() {
         window.game.scene.getScene &&
         typeof window.game.scene.getScene === 'function') {
       
-      const level01 = window.game.scene.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
+      const level01 = window.game.scene.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene");
       
       if (level01 && 
           level01.scene && 
