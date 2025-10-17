@@ -1887,6 +1887,10 @@ window.lockPlayAndShowGameOver = function() {
             level01.lv01Puzzle10Btn.setAlpha(1);
           }
 
+          // ✅ DEFINISI isPaid SEBELUM DIGUNAKAN (line ~1965)
+          const email = localStorage.getItem('email');
+          const paymentData = await checkPaymentStatusFromBackend(email);
+          const isPaid = paymentData && paymentData.isPaid === true;
           // === UNLOCK FAVORITE MENUS (only for paid users) ===
           if (isPaid) {
             // Only unlock favorite music for paid users
