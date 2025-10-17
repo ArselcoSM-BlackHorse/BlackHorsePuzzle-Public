@@ -1887,12 +1887,16 @@ window.lockPlayAndShowGameOver = function() {
             level01.lv01Puzzle10Btn.setAlpha(1);
           }
 
-          // ✅ DEFINISI isPaid SEBELUM DIGUNAKAN (line ~1965)
-          const email = localStorage.getItem('email');
-          const paymentData = await checkPaymentStatusFromBackend(email);
-          const isPaid = paymentData && paymentData.isPaid === true;
-          // === UNLOCK FAVORITE MENUS (only for paid users) ===
-          if (isPaid) {
+
+          // ✅ PERBAIKAN - buat async function:
+          async function handlePaymentCheck() {
+           const email = localStorage.getItem('email');
+           if (!email) return;
+           // ✅ DEFINISI isPaid SEBELUM DIGUNAKAN (line ~1965)
+           const paymentData = await checkPaymentStatusFromBackend(email);
+           const isPaid = paymentData && paymentData.isPaid === true;
+           // === UNLOCK FAVORITE MENUS (only for paid users) ===
+           if (isPaid) {
             // Only unlock favorite music for paid users
             if (level01.musicNotes && Array.isArray(level01.musicNotes)) {
               level01.musicNotes.forEach(note => note.setInteractive({ useHandCursor: true }));  
@@ -1925,9 +1929,13 @@ window.lockPlayAndShowGameOver = function() {
                              method || 'System';
             showSuccessNotification(`✅ Game Unlocked via ${methodText} - Ready to Play!`);
           }
-          } else if (lossUser) {
-          console.log('🔒 Locking game - Loss user without payment');
+        } 
+          // ✅ PANGGIL FUNCTION  
+          handlePaymentCheck();
           
+        if (lossUser) {
+          console.log('🔒 Locking game - Loss user without payment');
+  
           // === LOCK PLAY BUTTON ===
           if (level01.playBtn) {
             level01.playBtn.disableInteractive();
@@ -1971,7 +1979,7 @@ window.lockPlayAndShowGameOver = function() {
     } else {
       console.log(`🎮 Phaser not ready - Payment status: ${isPaid ? 'paid' : 'unpaid'}`);
     }
-
+  }
 
 
 document.addEventListener('visibilitychange', async () => {
