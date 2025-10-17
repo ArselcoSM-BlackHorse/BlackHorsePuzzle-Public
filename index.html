@@ -1255,41 +1255,15 @@ window.unlockPlayAndHideGameOver = function() {
 // ✅ ENHANCED REAL BACKEND VERIFICATION READY
 console.log('✅ REAL BACKEND VERIFICATION READY - CONNECT TO RENDER.COM');
 
- // ✅ GET USER CLASSIFICATION:
-    //const email = localStorage.getItem("email"); pasang di atas dekat pemanggil initUserData
-//    const history = getPlayerGameHistory(email);
-//    const currentScore = parseInt(localStorage.getItem(`score_${email}`) || 0);
-//    const totalPlays = history.totalGamesPlayed || 0;
-
-    // ✅ Tambahkan ini untuk ambil status pembayaran
-//    const paymentData = JSON.parse(localStorage.getItem(`gameData-${email}`) || '{}');
-//    const isPaid = paymentData.isPaid === true;
-//    const progress = userData.gameProgress || null;
-
-    // ✅ PROPER USER CLASSIFICATION:
-    //const newUser = totalPlays === 0;  // Only 0 plays = new user
-    //const winUser = totalPlays >= 1 && currentScore > 0;  // 1 dst plays = active user
-    //const lossUser = totalPlays >= 3 && currentScore === 0 && !isPaid;  // 3+ plays, no score, no payment
-    //const userStatus = {
-//    const newUser = !progress || progress.totalPlays === 0;
-//    const winUser = progress && progress.totalPlays >= 1 && (progress.level01Score || 0) > 0;
-//    const lossUser = progress && progress.totalPlays >= 3 && (progress.level01Score || 0) === 0;
-    //};
-
-//    console.log('👤 User classification:', { 
-//      newUser: !progress || progress.totalPlays === 0,
-//      winUser: progress && progress.totalPlays >= 1 && (progress.level01Score || 0) > 0,
-//      lossUser: progress && progress.totalPlays >= 3 && (progress.level01Score || 0) === 0
-//    });
-
-//    console.log('👤 User classification:', { 
-//      newUser: newUser,
-//      winUser: winUser,
-//      lossUser: lossUser,
-//      currentScore, 
-//      totalPlays, 
-//      isPaid 
-//    });
+// ✅ DEFINISI isPaid SEBELUM DIGUNAKAN
+async function handleSomeFunction() {
+  const email = localStorage.getItem('email');
+  if (!email) return;
+  
+  // ✅ 1. DEFINISI isPaid DARI BACKEND
+  const paymentData = await checkPaymentStatusFromBackend(email);
+  const isPaid = paymentData && paymentData.isPaid === true;
+   
     
    //✅ UPDATE GAME OVER STATE:
     if (isPaid) {
@@ -1299,7 +1273,7 @@ console.log('✅ REAL BACKEND VERIFICATION READY - CONNECT TO RENDER.COM');
     } else if (lossUser) {
       localStorage.setItem(`gameOver_${email}`, 'true');
     } 
-
+  }
 // ✅ ENHANCED level01Score MANAGEMENT FUNCTIONS (ADD FIRST):
 // ✅ ENHANCED GET PLAYER GAME level01Score AND HISTORY
 function getPlayerGameHistory(email) {
