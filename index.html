@@ -1196,6 +1196,10 @@ window.verifyEmailWithBackend = async function(email) {
 
 // UNLOCK GLOBAL FUNCTION & HIDE GAME OVER PANEL
 window.unlockPlayAndHideGameOver = function() {
+if (!window.game || !window.game.scene || !window.game.scene.getScene) {
+    console.warn('⚠️ Game not ready for unlockPlayAndHideGameOver');
+    return;
+  }  
   // Dapatkan scene Level01Scene
   //const level01 = window.game && window.game.scene && window.game.scene.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
   const level01 = window.game.scene.getScene("Level01Scene");
@@ -1829,6 +1833,12 @@ function stopPaymentMonitoring() {
          
 // LOCK PLAY & SHOW GAME OVER FUNCTION
 window.lockPlayAndShowGameOver = function() {
+ // ✅ ADD SAFETY CHECK
+  if (!window.game || !window.game.scene || !window.game.scene.getScene) {
+    console.warn('⚠️ Game not ready for lockPlayAndShowGameOver');
+    return;
+  }
+    
   setTimeout(() => {
     //const level01 = window.game?.scene?.getScene("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js");
     const level01 = window.game.scene.getScene("Level01Scene");
