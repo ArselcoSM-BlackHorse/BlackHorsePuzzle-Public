@@ -1327,7 +1327,6 @@ window.addEventListener('DOMContentLoaded', async function() {
       
       if (syncResult.success) {
         console.log('✅ Initial backend sync successful');
-        
         // ✅ TAMBAH: Update userData dengan data dari backend
         userData = JSON.parse(localStorage.getItem(`gameData-${email}`)) || {};
         
@@ -1335,6 +1334,9 @@ window.addEventListener('DOMContentLoaded', async function() {
         const paymentData = await window.checkPaymentStatusFromBackend(email);
         console.log('💳 Initial payment check:', paymentData);
         window.updateGamePaymentStatus(paymentData.isPaid, paymentData.method);
+        
+        // ✅ User classification dilakukan DI SINI
+        const scoreStatus = checkPlayerScoreStatus(email);
         
         // ✅ TAMBAH: Start auto-sync setelah initial sync berhasil
         window.startAutoSync(email);
