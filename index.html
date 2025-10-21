@@ -217,8 +217,26 @@
   background: linear-gradient(90deg, #0078ff 0%, #00eaff 100%);
   box-shadow: 0 0 18px #00eaffcc;
 } 
-    </style>
-       
+         
+#loginAgainBtn {
+  width: 140px;
+  height: 40px;
+  background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  margin-left: 0; /* Biar sejajar dengan Resend Code */
+  margin-top: 0;
+  cursor: pointer;
+  transition: background 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+#loginAgainBtn:hover {
+  background: linear-gradient(90deg, #0072ff 0%, #00c6ff 100%);
+}
+</style>
 
 <script>
 // 🔧 Service Worker Registration - Seri 1
@@ -602,7 +620,7 @@ window.updateGamePaymentStatus = function(isPaid, method = null) {
   </div>
   <div class="login-row" style="gap: 16px;">
     <button id="resendVerificationBtn" style="width: 140px;">Resend Code</button>
-    <button id="loginAgainBtn" style="width: 90px;">Login</button>
+    <button id="loginAgainBtn">Login</button>
   </div>
 </div>
 
@@ -1105,7 +1123,7 @@ window.resendVerificationEmail = async function(email) {
     );
     const data = response.data;
     if (data.success) {
-      alert('Verification code has been sent to your email. Please check your inbox or spam.');
+      alert("Verification code sent to your email! Check inbox or spam. If invalid, resend and use the new code.");
       console.log('✅ Resend verification success:', email);
       return true;
     } else {
