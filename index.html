@@ -600,8 +600,9 @@ window.updateGamePaymentStatus = function(isPaid, method = null) {
     <input type="text" id="verificationCodeInput" placeholder="Verification Code" autocomplete="off" />
     <button id="verifyBtn">Verify</button>
   </div>
-  <div class="login-row">
-    <button id="resendVerificationBtn">Resend Code</button>
+  <div class="login-row" style="gap: 16px;">
+    <button id="resendVerificationBtn" style="width: 140px;">Resend Code</button>
+    <button id="loginAgainBtn" style="width: 90px;">Login</button>
   </div>
 </div>
 
@@ -632,28 +633,41 @@ window.updateGamePaymentStatus = function(isPaid, method = null) {
      }
     } 
 
-// SEANBEACON menyimpan level01Score dan waktu ke backend saat sebelum halaman ditutup
- window.addEventListener('beforeunload', () => {
-  const email = localStorage.getItem('email');
-  //const level01Score = window.Level01Scene?.instance?.level01Score || 0; // pastikan ambil level01Score terbaru
-  const level01Score = localStorage.getItem(`score_${email}`) || 0;
-  const time = window.Level01Scene?.instance?.timeElapsed || 0;
+// ✅ SAFE EMERGENCY SAVE ON BEFOREUNLOAD (DI LUAR CLASS)
+window.addEventListener('beforeunload', () => {
+  const email = localStorage.getItem("email");
   if (!email) return;
+  
+  const userData = JSON.parse(localStorage.getItem(`gameData-${email}`)) || {};
+  const gameProgress = userData.gameProgress || {};
+  
+  if (!gameProgress.level01Score && !gameProgress.totalPlays) {
+    console.log('⚠️ No meaningful data to save on beforeunload');
+    return;
+  }
+  
+  const progress = {
+    level01Score: gameProgress.level01Score || 0,
+    starAlpha: gameProgress.starAlpha || 0,
+    totalPlays: gameProgress.totalPlays || 0,
+    level01HighScore: gameProgress.level01HighScore || 0,
+    level01Completed: gameProgress.level01Completed || false,
+    bestTime: gameProgress.bestTime || 0,
+    averageTime: gameProgress.averageTime || 0,
+    completionRate: gameProgress.completionRate || 0,
+    perfectGames: gameProgress.perfectGames || false,
+    totalAttempts: gameProgress.totalAttempts || 0,
+    completionTime: gameProgress.completionTime || 0,
+    isPerfectGame: gameProgress.isPerfectGame || false,
+    saveSource: 'beforeunload'
+ };
+  
+  const url = `https://backend-paypalblackhorsepuzzle.onrender.com/api/users/${encodeURIComponent(email)}/update-progress`;
+  navigator.sendBeacon(url, JSON.stringify(progress));
+  
+  console.log('💾 Safe emergency save:', progress.level01Score);
+});
 
-  console.log('📤 Sending level01Score via sendBeacon:', level01Score, time);
-
-
-  navigator.sendBeacon(
-  `https://backend-paypalblackhorsepuzzle.onrender.com/api/users/${encodeURIComponent(email)}/update-progress`,
-  new Blob([JSON.stringify({
-    email,
-    level01Completed: false,
-    level01Score: level01Score,    // ✅ gunakan level01Score dari instance
-    completionTime: time,        // ✅ gunakan time dari instance
-    isPerfectGame: false
-  })], { type: 'text/plain' })
- );
- });
  
 //=================================== BATAS SENDBEACON ====================================
 
@@ -1106,6 +1120,14 @@ window.resendVerificationEmail = async function(email) {
   }
 };
 
+document.getElementById("loginAgainBtn").onclick = function() {
+  // Sembunyikan verificationBox
+  document.getElementById("verificationBox").style.display = "none";
+  // Tampilkan loginBox
+  document.getElementById("loginBox").style.display = "block";
+  document.getElementById("emailInput").focus();
+};
+
 //  Create proper showMessage function
 window.showMessage = function(message, color = '#ff6b6b') {
     alert(message);
@@ -1314,9 +1336,17 @@ function showLoginForm() {
 //-------------------------------------------------------------------------------------------
 // ✅ ENHANCED DOMCONTENTLOADED WITH level01Score MANAGEMENT:
 window.addEventListener('DOMContentLoaded', async function() {
-  const email = localStorage.getItem("email"); 
-   let userData = JSON.parse(localStorage.getItem(`gameData-${email}`)) || {};
- 
+  const loginAgainBtn = document.getElementById("loginAgainBtn");
+  if (loginAgainBtn) {
+    loginAgainBtn.onclick = function() {
+      document.getElementById("verificationBox").style.display = "none";
+      document.getElementById("loginBox").style.display = "block";
+      document.getElementById("emailInput").focus();
+    };
+  }
+  const email = localStorage.getItem("email");
+  let userData = JSON.parse(localStorage.getItem(`gameData-${email}`)) || {};
+
   console.log('📄 Enhanced Black Horse Puzzle - Initializing secure system');
   
   if (email) {
