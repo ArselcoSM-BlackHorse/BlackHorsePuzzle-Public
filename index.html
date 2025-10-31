@@ -420,17 +420,17 @@ window.updateGamePaymentStatus = function(isPaid, method = null, additionalData 
       transactionId: additionalData.transactionId || 'N/A'
     });
     
-    if (isPaid === true) {
-      if (this.unblur10PuzzleButton) this.unblur10PuzzleButton();
-      if (this.unlockGameAfterPurchase) this.unlockGameAfterPurchase();
-      if (window.unlockPlayAndHideGameOver) window.unlockPlayAndHideGameOver();
-      console.log('✅ Payment confirmed (isPaid=true), game unlocked');
-    } else {
-      if (this.lockAllGameplayButtons) this.lockAllGameplayButtons();
-      if (this.blur10PuzzleButton) this.blur10PuzzleButton();
-      if (window.lockPlayAndShowGameOver) window.lockPlayAndShowGameOver();
-      console.log('🔒 Payment not confirmed (isPaid=false), game locked');
-    }
+    //if (isPaid === true) {
+      //if (this.unblur10PuzzleButton) this.unblur10PuzzleButton();
+      //if (this.unlockGameAfterPurchase) this.unlockGameAfterPurchase();
+      //if (window.unlockPlayAndHideGameOver) window.unlockPlayAndHideGameOver();
+      //console.log('✅ Payment confirmed (isPaid=true), game unlocked');
+    //} else {
+      //if (this.lockAllGameplayButtons) this.lockAllGameplayButtons();
+      //if (this.blur10PuzzleButton) this.blur10PuzzleButton();
+      //if (window.lockPlayAndShowGameOver) window.lockPlayAndShowGameOver();
+      //console.log('🔒 Payment not confirmed (isPaid=false), game locked');
+    //}
 }
 
  // Client-side handling of payment status
