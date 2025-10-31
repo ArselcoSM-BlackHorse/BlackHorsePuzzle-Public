@@ -386,27 +386,51 @@ window.checkPaymentStatus = async function(email) {
   return result;
 };
 // This function updates the game payment status and UI based on the payment state
-// ✅ ENHANCED GAME PAYMENT STATUS UPDATE:
-
-window.updateGamePaymentStatus = function(isPaid, method = null) {
-  const email = localStorage.getItem("email");
-  if (!email) {
-    console.error('❌ email not defined in updateGamePaymentStatus');
-    return;
-  }
-  let userData = JSON.parse(localStorage.getItem(`gameData-${email}`)) || {};
-  userData.isPaid = isPaid;
-  localStorage.setItem(`gameData-${email}`, JSON.stringify(userData));
-  window.isPaid = isPaid;
-  // Unlock tombol jika sudah bayar
-  if (isPaid) {
-    if (window.unblur10PuzzleButton) window.unblur10PuzzleButton();
-    if (window.unlockGameAfterPurchase) window.unlockGameAfterPurchase();
-    console.log('✅ Payment status updated, game unlocked');
-  } else {
-    if (window.lockAllGameplayButtons) window.lockAllGameplayButtons();
-    console.log('🔒 Payment not confirmed, game locked');
-  }
+// ✅ ENHANCED GAME PAYMENT STATUS UPDATE WITH isPaid FLAG:
+window.updateGamePaymentStatus = function(isPaid, method = null, additionalData = {}) {
+    const email = localStorage.getItem("email");
+    if (!email) {
+      console.error('❌ email not defined in updateGamePaymentStatus');
+      return;
+    }
+    
+    // ✅ EXPLICIT isPaid FLAG
+    let userData = JSON.parse(localStorage.getItem(`gameData-${email}`)) || {};
+    userData.isPaid = isPaid === true; // Pastikan boolean
+    userData.paymentMethod = method;
+    userData.paymentVerified = isPaid === true;
+    userData.paymentDate = isPaid ? new Date().toISOString() : null;
+    
+    // ✅ TAMBAHAN DATA JIKA ADA
+    if (additionalData.transactionId) {
+      userData.transactionId = additionalData.transactionId;
+    }
+    if (additionalData.amount) {
+      userData.paymentAmount = additionalData.amount;
+    }
+    
+    localStorage.setItem(`gameData-${email}`, JSON.stringify(userData));
+    window.isPaid = isPaid === true;
+    
+    // ✅ LOGGING YANG LEBIH JELAS
+    console.log('💳 Payment status updated:', {
+      isPaid: isPaid === true,
+      method: method,
+      email: email,
+      transactionId: additionalData.transactionId || 'N/A'
+    });
+    
+    if (isPaid === true) {
+      if (this.unblur10PuzzleButton) this.unblur10PuzzleButton();
+      if (this.unlockGameAfterPurchase) this.unlockGameAfterPurchase();
+      if (window.unlockPlayAndHideGameOver) window.unlockPlayAndHideGameOver();
+      console.log('✅ Payment confirmed (isPaid=true), game unlocked');
+    } else {
+      if (this.lockAllGameplayButtons) this.lockAllGameplayButtons();
+      if (this.blur10PuzzleButton) this.blur10PuzzleButton();
+      if (window.lockPlayAndShowGameOver) window.lockPlayAndShowGameOver();
+      console.log('🔒 Payment not confirmed (isPaid=false), game locked');
+    }
 }
 
  // Client-side handling of payment status
