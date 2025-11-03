@@ -691,49 +691,15 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
      }
     } 
 
-// ✅ SAFE EMERGENCY SAVE ON BEFOREUNLOAD (DI LUAR CLASS)
-window.addEventListener('beforeunload', () => {
-  const email = localStorage.getItem("email");
-  if (!email) return;
-  
-  const userData = JSON.parse(localStorage.getItem(`gameData-${email}`)) || {};
-  const gameProgress = userData.gameProgress || {};
-  
-  if (!gameProgress.level01Score && !gameProgress.totalPlays) {
-    console.log('⚠️ No meaningful data to save on beforeunload');
-    return;
-  }
-  
-  const progress = {
-    level01Score: gameProgress.level01Score || 0,
-    starAlpha: gameProgress.starAlpha || 0,
-    totalPlays: gameProgress.totalPlays || 0,
-    level01HighScore: gameProgress.level01HighScore || 0,
-    level01Completed: gameProgress.level01Completed || false,
-    bestTime: gameProgress.bestTime || 0,
-    averageTime: gameProgress.averageTime || 0,
-    completionRate: gameProgress.completionRate || 0,
-    perfectGames: gameProgress.perfectGames || false,
-    totalAttempts: gameProgress.totalAttempts || 0,
-    completionTime: gameProgress.completionTime || 0,
-    isPerfectGame: gameProgress.isPerfectGame || false,
-    saveSource: 'beforeunload'
- };
-  
-  const url = `https://backend-paypalblackhorsepuzzle.onrender.com/api/users/${encodeURIComponent(email)}/update-progress`;
-  navigator.sendBeacon(url, JSON.stringify(progress));
-  
-  console.log('💾 Safe emergency save:', progress.level01Score);
-});
-
  
 //=================================== BATAS SENDBEACON ====================================
 
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') {
-    this.saveRoundStarToCache();
     const email = localStorage.getItem('email');
     const level01Score = localStorage.getItem(`score_${email}`) || 0;
+    level01?.saveRoundStarToCache?.();   // ✅ panggil method Scene
+    level01?.commitProgress?.('auto');   // opsional
     // Jika ada timeElapsed yang valid, ambil dari scene, jika tidak, pakai 0
     let time = 0;
     if (window.game && window.game.scene && window.game.scene.getScene) {
@@ -1916,15 +1882,7 @@ window.lockPlayAndShowGameOver = function() {
       console.log(`🎮 Phaser not ready - Payment status: ${isPaid ? 'paid' : 'unpaid'}`);
     }
 
-<!-- AUTOSAVE saat tab disembunyikan -->
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'hidden') {
-    const level01 = window.game?.scene?.getScene('Level01Scene');
-    level01?.saveRoundStarToCache?.();   // ✅ jangan pakai this.*
-    level01?.saveScorePersistent?.();    // opsional: sinkron cepat ke backend jika ada
-  }
-});
-
+// ✅ VISIBILITY CHANGE HANDLER FOR PAYMENT STATUS SYNC:
 document.addEventListener('visibilitychange', async () => {
   if (document.visibilityState === 'visible') {
     const email = localStorage.getItem('email');
