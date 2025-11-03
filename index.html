@@ -691,6 +691,41 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
      }
     } 
 
+// ✅ SAFE EMERGENCY SAVE ON BEFOREUNLOAD (DI LUAR CLASS)
+window.addEventListener('beforeunload', () => {
+  const email = localStorage.getItem("email");
+  if (!email) return;
+  
+  const userData = JSON.parse(localStorage.getItem(`gameData-${email}`)) || {};
+  const gameProgress = userData.gameProgress || {};
+  
+  if (!gameProgress.level01Score && !gameProgress.totalPlays) {
+    console.log('⚠️ No meaningful data to save on beforeunload');
+    return;
+  }
+  
+  const progress = {
+    level01Score: gameProgress.level01Score || 0,
+    starAlpha: gameProgress.starAlpha || 0,
+    totalPlays: gameProgress.totalPlays || 0,
+    level01HighScore: gameProgress.level01HighScore || 0,
+    level01Completed: gameProgress.level01Completed || false,
+    bestTime: gameProgress.bestTime || 0,
+    averageTime: gameProgress.averageTime || 0,
+    completionRate: gameProgress.completionRate || 0,
+    perfectGames: gameProgress.perfectGames || false,
+    totalAttempts: gameProgress.totalAttempts || 0,
+    completionTime: gameProgress.completionTime || 0,
+    isPerfectGame: gameProgress.isPerfectGame || false,
+    saveSource: 'beforeunload'
+ };
+  
+  const url = `https://backend-paypalblackhorsepuzzle.onrender.com/api/users/${encodeURIComponent(email)}/update-progress`;
+  navigator.sendBeacon(url, JSON.stringify(progress));
+  
+  console.log('💾 Safe emergency save:', progress.level01Score);
+});
+
  
 //=================================== BATAS SENDBEACON ====================================
 
@@ -698,8 +733,6 @@ document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') {
     const email = localStorage.getItem('email');
     const level01Score = localStorage.getItem(`score_${email}`) || 0;
-    level01?.saveRoundStarToCache?.();   // ✅ panggil method Scene
-    level01?.commitProgress?.('auto');   // opsional
     // Jika ada timeElapsed yang valid, ambil dari scene, jika tidak, pakai 0
     let time = 0;
     if (window.game && window.game.scene && window.game.scene.getScene) {
@@ -730,70 +763,204 @@ document.addEventListener('visibilitychange', () => {
 });
 //================================= BATAS VISIBILITY CHANGE =================================
 // Definisikan di luar create()
-// Init di Index.html berbeda dengan di SplashScene dan Level01Scene
-// ✅ INITIALIZE USER DATA WITH BACKEND SYNC AND MERGE LOGIC:
-window.initUserData = async function(email) {
-  try {
+window.initUserData = async function(email, userData = null) {
+try {
     console.log(`🔄 Initializing user data for: ${email}`);
+    
+    // ✅ 1. SELALU AMBIL DATA TERBARU DARI BACKEND DULU
+    const progressRes = await this.getUserProgress(email);
+    
+    if (progressRes && progressRes.success && progressRes.progress) {
+      // ✅ 2. UPDATE SEMUA INSTANCE PROPERTIES DARI BACKEND
+      const progress = progressRes.progress;
+      
+      // ✅ PRIORITASKAN SCORE DARI BACKEND
+      if (typeof progress.level01Score === 'number' && progress.level01Score > 0) {
+        this.level01Score = progress.level01Score;
+      } else {
+        // Fallback ke localStorage jika backend score 0 tapi local ada score
+        const userDataLocal = JSON.parse(localStorage.getItem(`gameData-${email}`)) || {};
+        if (
+          userDataLocal.gameProgress &&
+          userDataLocal.gameProgress.level01Score > 0 &&
+          !userDataLocal.lossUser // pastikan bukan lossUser/game over
+        ) {
+          this.level01Score = userDataLocal.gameProgress.level01Score;
+        }
+      } 
 
-    // Pastikan getUserProgress tersedia; jika belum, siapkan fallback
-    if (typeof window.getUserProgress !== 'function') {
-      const base = (window.BACKEND_URL || 'https://backend-paypalblackhorsepuzzle.onrender.com').replace(/\/+$/,'');
-      window.getUserProgress = async function(em) {
-        const pathEmail = encodeURIComponent(String(em || '').toLowerCase().trim());
-        const url = `${base}/api/users/${pathEmail}/progress`;
-        const { data } = await axios.post(
-          url,
-          { email: String(em || '').toLowerCase().trim(), level: 'Level01Scene' },
-          { timeout: 200000 }
-        );
-        return data;
+      // Update score dan progress dari backend
+      this.level01Score = progress.level01Score || 0;
+      this.starAlpha = progress.starAlpha || 0;
+      this.level01HighScore = progress.level01HighScore || 0;
+      this.totalPlays = progress.totalPlays || 0;
+      this.bestTime = progress.bestTime || 0;
+      this.averageTime = progress.averageTime || 0;
+      this.completionRate = progress.completionRate || 0;
+      this.perfectGames = progress.perfectGames || false;
+      this.totalAttempts = progress.totalAttempts || 0;
+      this.completionTime = progress.completionTime || 0;
+      this.isPerfectGame = progress.isPerfectGame || false;
+      this.level01Completed = progress.level01Completed || false;
+    // ✅ 3. UPDATE USER STATUS DARI BACKEND RESPONSE
+      this.newUser = progressRes.newUser || false;
+      this.winUser = progressRes.winUser || false;
+      this.lossUser = progressRes.lossUser || false;
+      this.isGameOver = progressRes.isGameOver || false;
+      
+      // ✅ 4. UPDATE WINDOW GLOBAL VARIABLES
+      window.level01Score = this.level01Score;
+      window.starAlpha = this.starAlpha;
+      
+      // ✅ 5. UPDATE UI JIKA SUDAH ADA
+      if (this.scoreText) {
+        this.scoreText.setText(this.level01Score.toString().padStart(5, '0'));
+      }
+      if (this.starBronzeBlackHorse && this.starAlpha > 0) {
+        this.starBronzeBlackHorse.setAlpha(this.starAlpha);
+      } 
+    // ✅ 6. SYNC KE LOCALSTORAGE SEBAGAI BACKUP
+      const userData = {
+        gameProgress: progress,
+        newUser: progressRes.newUser,
+        winUser: progressRes.winUser,
+        lossUser: progressRes.lossUser,
+        isGameOver: progressRes.isGameOver,
+        lastSyncFromBackend: new Date().toISOString(),
+        backendSyncSuccess: true
       };
-    }
-
-    const progressRes = await window.getUserProgress(email); // ✅ window.*, bukan this
-    if (!progressRes?.success || !progressRes.progress) throw new Error('invalid backend');
-
-    const server = progressRes.progress || {};
-    const localUD = JSON.parse(localStorage.getItem(`gameData-${email}`) || '{}');
-    const local = localUD.gameProgress || {};
-    const localTs = Date.parse(local.lastSaved || 0);
-    const serverTs = Date.parse(server.lastUpdated || localUD.lastSyncFromBackend || 0);
-    const merged = (localTs && (!serverTs || localTs > serverTs)) ? { ...server, ...local } : server;
-
-    // Data-only snapshot (jangan set properti Scene di sini)
-    const snapshot = {
-      gameProgress: { ...merged, lastSaved: new Date().toISOString() },
-      newUser: !!progressRes.newUser,
-      winUser: !!progressRes.winUser,
-      lossUser: !!progressRes.lossUser,
-      isGameOver: !!progressRes.isGameOver,
-      lastSyncFromBackend: new Date().toISOString(),
-      backendSyncSuccess: true
-    };
-
-    localStorage.setItem(`gameData-${email}`, JSON.stringify(snapshot));
-
+      localStorage.setItem(`gameData-${email}`, JSON.stringify(userData));
+      
+      console.log(`✅ User data initialized from backend:`, {
+        level01Score: this.level01Score,
+        totalPlays: this.totalPlays,
+        newUser: this.newUser,
+        winUser: this.winUser,
+        lossUser: this.lossUser,
+        isGameOver: this.isGameOver
+      });
     return {
-      success: true,
-      source: localTs && localTs > serverTs ? 'local-newer' : 'backend',
-      ...snapshot
-    };
-  } catch (err) {
-    console.warn('❌ initUserData fallback:', err.message);
-    const localUD = JSON.parse(localStorage.getItem(`gameData-${email}`) || '{}');
-    const p = localUD.gameProgress || {};
+        success: true,
+        source: 'backend',
+        progress: progress,
+        userStatus: {
+          newUser: this.newUser,
+          winUser: this.winUser,
+          lossUser: this.lossUser,
+          isGameOver: this.isGameOver
+        }
+      };
+      
+    } else {
+      console.warn('❌ Backend response invalid, using fallback initialization');
+      throw new Error('Backend response invalid');
+    }
+    
+  } catch (error) {
+    console.warn('❌ Backend initialization failed, using localStorage fallback:', error);
+    
+    // ✅ 7. FALLBACK KE LOCALSTORAGE + DEFAULT VALUES
+    let userData = JSON.parse(localStorage.getItem(`gameData-${email}`)) || {};
+    
+    if (userData.gameProgress) {
+      // Update dari localStorage yang ada
+      this.level01Score = userData.gameProgress.level01Score || 0;
+      this.starAlpha = userData.gameProgress.starAlpha || 0;
+      this.level01HighScore = userData.gameProgress.level01HighScore || 0;
+      this.totalPlays = userData.gameProgress.totalPlays || 0;
+      
+     // Kalkulasi user status dari localStorage (konsisten dengan backend)
+      this.newUser = !userData.gameProgress || userData.gameProgress.totalPlays === 0;
+      this.winUser = userData.gameProgress && userData.gameProgress.totalPlays >= 1 && (userData.gameProgress.level01Score || 0) > 0;
+      this.lossUser = userData.gameProgress && userData.gameProgress.totalPlays >= 3 && (userData.gameProgress.level01Score || 0) === 0;
+      this.isGameOver = this.lossUser;
+      
+      console.log(`📥 User data loaded from localStorage fallback:`, {
+        level01Score: this.level01Score,
+        totalPlays: this.totalPlays,
+        newUser: this.newUser,
+        winUser: this.winUser,
+        lossUser: this.lossUser
+      });
+    } else {
+      // ✅ 8. DEFAULT INITIALIZATION UNTUK USER BARU
+      this.level01Score = 0;
+      this.starAlpha = 0;
+      this.level01HighScore = 0;
+      this.totalPlays = 0;
+      this.bestTime = 0;
+      this.averageTime = 0;
+      this.completionRate = 0;
+      this.perfectGames = false;
+      this.totalAttempts = 0;
+      this.completionTime = 0;
+      this.isPerfectGame = false;
+      this.level01Completed = false;
+      
+      // User status untuk user baru
+      this.newUser = true;
+      this.winUser = false;
+      this.lossUser = false;
+      this.isGameOver = false;
+      
+    // ✅ 9. SAVE DEFAULT DATA KE LOCALSTORAGE DAN BACKEND
+      userData = {
+        gameProgress: {
+          level01Completed: false,
+          level01Score: 0,
+          level01HighScore: 0,
+          totalPlays: 0,
+          bestTime: 0,
+          averageTime: 0,
+          completionRate: 0,
+          perfectGames: false,
+          totalAttempts: 0,
+          completionTime: 0,
+          isPerfectGame: false,
+          starAlpha: 0
+        },
+        newUser: true,
+        winUser: false,
+        lossUser: false,
+        isGameOver: false,
+        initializedFromDefault: true,
+        lastSyncFromBackend: new Date().toISOString()
+      };
+      localStorage.setItem(`gameData-${email}`, JSON.stringify(userData));
+      
+      // ✅ 10. SYNC DEFAULT DATA KE BACKEND
+      try {
+        await this.updateUserProgress(email, userData.gameProgress);
+        console.log(`✅ Default user data synced to backend for new user: ${email}`);
+      } catch (syncError) {
+        console.warn('❌ Failed to sync default data to backend:', syncError);
+      }
+      
+      console.log(`🆕 New user initialized with default data: ${email}`);
+    }
+    
+    // ✅ 11. UPDATE WINDOW GLOBAL DARI FALLBACK/DEFAULT
+    window.level01Score = this.level01Score;
+    window.starAlpha = this.starAlpha;
+    
+    // Update UI jika sudah ada
+    if (this.scoreText) {
+      this.scoreText.setText(this.level01Score.toString().padStart(5, '0'));
+    }
+    
     return {
       success: true,
       source: 'fallback',
-      gameProgress: p,
-      newUser: !p || (p.totalPlays || 0) === 0,
-      winUser: (p.totalPlays || 0) >= 1 && (p.level01Score || 0) > 0,
-      lossUser: (p.totalPlays || 0) >= 3 && (p.level01Score || 0) === 0,
-      isGameOver: (p.totalPlays || 0) >= 3 && (p.level01Score || 0) === 0
+      progress: userData.gameProgress,
+      userStatus: {
+        newUser: this.newUser,
+        winUser: this.winUser,
+        lossUser: this.lossUser,
+        isGameOver: this.isGameOver
+      }
     };
   }
-};
+}
 
 // ========== ENHANCED SECURE LOGIN & PAYMENT SYSTEM ==========
 // ✅ GLOBAL VARIABLES:
@@ -911,9 +1078,7 @@ try {
  // Handler tombol Verify
 document.getElementById("verifyBtn").onclick = async function() {
   const email = document.getElementById('emailInput').value.trim();
-  const raw = document.getElementById('verificationCodeInput').value || '';
-  const code = raw.toUpperCase().replace(/[^A-Z0-9]/g, '');
-  //const code = document.getElementById('verificationCodeInput').value.trim();
+  const code = document.getElementById('verificationCodeInput').value.trim();
 
   try {
     const response = await axios.post(
@@ -932,12 +1097,6 @@ document.getElementById("verifyBtn").onclick = async function() {
       document.getElementById("verificationBox").style.display = "none";
       document.getElementById("logoutBtn").style.display = "inline-block";
       document.getElementById("verificationCodeInput").value = "";
-      
-      // Prime cache (data-only) sebelum lanjut
-      if (typeof window.initUserData === 'function') {
-        try { await window.initUserData(email); } catch(e){ console.warn('initUserData failed:', e.message); }
-      }
-      
       if (window.Phaser && window.game && window.game.scene) {
         //window.game.scene.start("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/SplashScene.js");
         window.game.scene.start("SplashScene"); // ✅ BENAR
@@ -1882,15 +2041,14 @@ window.lockPlayAndShowGameOver = function() {
       console.log(`🎮 Phaser not ready - Payment status: ${isPaid ? 'paid' : 'unpaid'}`);
     }
 
-// ✅ VISIBILITY CHANGE HANDLER FOR PAYMENT STATUS SYNC:
+
+
 document.addEventListener('visibilitychange', async () => {
   if (document.visibilityState === 'visible') {
     const email = localStorage.getItem('email');
     if (email) {
       const paymentData = await window.checkPaymentStatusFromBackend(email);
       window.updateGamePaymentStatus(paymentData.isPaid, paymentData.method);
-      //opsional: sinkron progress
-      //await window.syncProgressFromBackend(email);
     }
   }
 }); 
