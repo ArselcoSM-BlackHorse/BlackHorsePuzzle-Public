@@ -1078,7 +1078,9 @@ try {
  // Handler tombol Verify
 document.getElementById("verifyBtn").onclick = async function() {
   const email = document.getElementById('emailInput').value.trim();
-  const code = document.getElementById('verificationCodeInput').value.trim();
+  const raw = document.getElementById('verificationCodeInput').value || '';
+  const code = raw.toUpperCase().replace(/[^A-Z0-9]/g, ''); // normalisasi OTP 
+  //const code = document.getElementById('verificationCodeInput').value.trim();
 
   try {
     const response = await axios.post(
