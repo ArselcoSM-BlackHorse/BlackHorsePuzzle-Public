@@ -792,7 +792,8 @@ try {
       // Update score dan progress dari backend
       this.level01Score = progress.level01Score || 0;
       this.starAlpha = progress.starAlpha || 0;
-      this.starAwarded = progress.starAwarded || 0;
+      this.starAwarded = progress.starAwarded || false;
+      this.starBronzeBlackHorseAlpha = progress.starBronzeBlackHorseAlpha || 0;
       this.level01HighScore = progress.level01HighScore || 0;
       this.totalPlays = progress.totalPlays || 0;
       this.bestTime = progress.bestTime || 0;
@@ -867,6 +868,8 @@ try {
       // Update dari localStorage yang ada
       this.level01Score = userData.gameProgress.level01Score || 0;
       this.starAlpha = userData.gameProgress.starAlpha || 0;
+      this.starBronzeBlackHorseAlpha = userData.gameProgress.starBronzeBlackHorseAlpha || 0;
+      this.starAwarded = userData.gameProgress.starAwarded || false;
       this.level01HighScore = userData.gameProgress.level01HighScore || 0;
       this.totalPlays = userData.gameProgress.totalPlays || 0;
       
@@ -887,6 +890,8 @@ try {
       // ✅ 8. DEFAULT INITIALIZATION UNTUK USER BARU
       this.level01Score = 0;
       this.starAlpha = 0;
+      this.starBronzeBlackHorseAlpha = 0;
+      this.starAwarded = false;
       this.level01HighScore = 0;
       this.totalPlays = 0;
       this.bestTime = 0;
@@ -918,7 +923,9 @@ try {
           totalAttempts: 0,
           completionTime: 0,
           isPerfectGame: false,
-          starAlpha: 0
+          starAlpha: 0,
+          starBronzeBlackHorseAlpha: 0,
+          starAwarded: false,
         },
         newUser: true,
         winUser: false,
@@ -943,7 +950,9 @@ try {
     // ✅ 11. UPDATE WINDOW GLOBAL DARI FALLBACK/DEFAULT
     window.level01Score = this.level01Score;
     window.starAlpha = this.starAlpha;
-    
+    window.starBronzeBlackHorseAlpha = this.starBronzeBlackHorseAlpha;
+    window.starAwarded = this.starAwarded;
+
     // Update UI jika sudah ada
     if (this.scoreText) {
       this.scoreText.setText(this.level01Score.toString().padStart(5, '0'));
