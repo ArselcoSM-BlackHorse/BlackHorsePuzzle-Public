@@ -774,9 +774,21 @@ try {
       // ✅ 2. UPDATE SEMUA INSTANCE PROPERTIES DARI BACKEND
       const progress = progressRes.progress;
       
-      // ✅ PRIORITASKAN SCORE DARI BACKEND
+      // ✅ PRIORITASKAN SCORE, ROUND, STAR DARI BACKEND
       if (typeof progress.level01Score === 'number' && progress.level01Score > 0) {
         this.level01Score = progress.level01Score;
+      }
+      if (typeof progress.round === 'number') {
+        this.round = progress.round;
+      }
+      if (typeof progress.starAlpha === 'number') {
+        this.starAlpha = clamp01(progress.starAlpha);
+      }
+      if (this.starAlpha > 0 && this.starBronzeBlackHorse) {
+          this.starBronzeBlackHorse.setAlpha(this.starAlpha);
+      }  
+      if (typeof progress.starAwarded === 'boolean') {
+        this.starAwarded = progress.starAwarded;
       } else {
         // Fallback ke localStorage jika backend score 0 tapi local ada score
         const userDataLocal = JSON.parse(localStorage.getItem(`gameData-${email}`)) || {};
