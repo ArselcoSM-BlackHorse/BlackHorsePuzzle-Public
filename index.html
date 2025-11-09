@@ -762,159 +762,228 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 //================================= BATAS VISIBILITY CHANGE =================================
-// Definisikan di luar create()
-// ...existing code above...
-window.initUserData = async function (email) {
-  try {
+window.initUserData = async function(email, userData = null) {
+try {
     console.log(`🔄 Initializing user data for: ${email}`);
+    
+    // ✅ 1. SELALU AMBIL DATA TERBARU DARI BACKEND DULU
     const progressRes = await this.getUserProgress(email);
-    if (!progressRes || !progressRes.success || !progressRes.progress) {
+    
+    if (progressRes && progressRes.success && progressRes.progress) {
+      // ✅ 2. UPDATE SEMUA INSTANCE PROPERTIES DARI BACKEND
+      const progress = progressRes.progress;
+      
+      // ✅ PRIORITASKAN SCORE, ROUND, STAR DARI BACKEND
+      if (typeof progress.level01Score === 'number' && progress.level01Score > 0) {
+        this.level01Score = progress.level01Score;
+      }
+      if (typeof progress.round === 'number') {
+        this.round = progress.round;
+      }
+      if (typeof progress.starAlpha === 'number') {
+        this.starAlpha = clamp01(progress.starAlpha);
+      }
+      if (this.starAlpha > 0 && this.starBronzeBlackHorse) {
+          this.starBronzeBlackHorse.setAlpha(this.starAlpha);
+      }  
+      if (typeof progress.starAwarded === 'boolean') {
+        this.starAwarded = progress.starAwarded;
+      } else {
+        // Fallback ke localStorage jika backend score 0 tapi local ada score
+        const userDataLocal = JSON.parse(localStorage.getItem(`gameData-${email}`)) || {};
+        if (
+          userDataLocal.gameProgress &&
+          userDataLocal.gameProgress.level01Score > 0 &&
+          !userDataLocal.lossUser // pastikan bukan lossUser/game over
+        ) {
+          this.level01Score = userDataLocal.gameProgress.level01Score;
+        }
+      } 
+
+      // Update score dan progress dari backend
+      this.level01Score = progress.level01Score || 0;
+      this.starAlpha = progress.starAlpha || 0;
+      this.starAwarded = progress.starAwarded || false;
+      //this.starBronzeBlackHorse = progress.starBronzeBlackHorse || 0;
+      this.level01HighScore = progress.level01HighScore || 0;
+      this.totalPlays = progress.totalPlays || 0;
+      this.bestTime = progress.bestTime || 0;
+      this.averageTime = progress.averageTime || 0;
+      this.completionRate = progress.completionRate || 0;
+      this.perfectGames = progress.perfectGames || false;
+      this.totalAttempts = progress.totalAttempts || 0;
+      this.completionTime = progress.completionTime || 0;
+      this.isPerfectGame = progress.isPerfectGame || false;
+      this.level01Completed = progress.level01Completed || false;
+    // ✅ 3. UPDATE USER STATUS DARI BACKEND RESPONSE
+      this.newUser = progressRes.newUser || false;
+      this.winUser = progressRes.winUser || false;
+      this.lossUser = progressRes.lossUser || false;
+      this.isGameOver = progressRes.isGameOver || false;
+      
+      // ✅ 4. UPDATE WINDOW GLOBAL VARIABLES
+      window.level01Score = this.level01Score;
+      window.starAlpha = this.starAlpha;
+      
+      // ✅ 5. UPDATE UI JIKA SUDAH ADA
+      if (this.scoreText) {
+        this.scoreText.setText(this.level01Score.toString().padStart(5, '0'));
+      }
+      if (this.starBronzeBlackHorse && this.starAlpha > 0) {
+        this.starBronzeBlackHorse.setAlpha(this.starAlpha);
+      } 
+    // ✅ 6. SYNC KE LOCALSTORAGE SEBAGAI BACKUP
+      const userData = {
+        gameProgress: progress,
+        newUser: progressRes.newUser,
+        winUser: progressRes.winUser,
+        lossUser: progressRes.lossUser,
+        isGameOver: progressRes.isGameOver,
+        lastSyncFromBackend: new Date().toISOString(),
+        backendSyncSuccess: true
+      };
+      localStorage.setItem(`gameData-${email}`, JSON.stringify(userData));
+      
+      console.log(`✅ User data initialized from backend:`, {
+        level01Score: this.level01Score,
+        totalPlays: this.totalPlays,
+        newUser: this.newUser,
+        winUser: this.winUser,
+        lossUser: this.lossUser,
+        isGameOver: this.isGameOver
+      });
+    return {
+        success: true,
+        source: 'backend',
+        progress: progress,
+        userStatus: {
+          newUser: this.newUser,
+          winUser: this.winUser,
+          lossUser: this.lossUser,
+          isGameOver: this.isGameOver
+        }
+      };
+      
+    } else {
+      console.warn('❌ Backend response invalid, using fallback initialization');
       throw new Error('Backend response invalid');
     }
-
-    const progress = progressRes.progress || {};
-    // Ambil cache lokal
-    let local = {};
-    try {
-      local = (JSON.parse(localStorage.getItem(`gameData-${email}`) || '{}').gameProgress) || {};
-    } catch {}
-
-    // Nilai existing di scene (this bisa bukan scene bila dipanggil tanpa bind)
-    const scene = this;
-    const existingScore     = Number(scene.level01Score || 0);
-    const existingRound     = Number(scene.round || 1);
-    const existingStarAlpha = Number(scene.starAlpha || 0);
-    const existingAwarded   = scene.starAwarded === true;
-
-    // Merge NO-DOWNGRADE
-    const merged = {
-      level01Score: Math.max(existingScore, Number(progress.level01Score || 0), Number(local.level01Score || 0)),
-      round: Math.max(existingRound, Number(progress.round || 1), Number(local.round || 1)),
-      starAlpha: Math.max(existingStarAlpha, Number(progress.starAlpha || 0), Number(local.starAlpha || 0)),
-      starAwarded: existingAwarded || progress.starAwarded === true || local.starAwarded === true,
-      level01HighScore: Math.max(Number(scene.level01HighScore || 0), Number(progress.level01HighScore || 0), Number(local.level01HighScore || 0)),
-      totalPlays: Math.max(Number(scene.totalPlays || 0), Number(progress.totalPlays || 0), Number(local.totalPlays || 0)),
-      bestTime: Math.max(Number(scene.bestTime || 0), Number(progress.bestTime || 0), Number(local.bestTime || 0)),
-      averageTime: Number(progress.averageTime ?? local.averageTime ?? scene.averageTime ?? 0),
-      completionRate: Number(progress.completionRate ?? local.completionRate ?? scene.completionRate ?? 0),
-      perfectGames: !!(progress.perfectGames || local.perfectGames || scene.perfectGames),
-      totalAttempts: Math.max(Number(scene.totalAttempts || 0), Number(progress.totalAttempts || 0), Number(local.totalAttempts || 0)),
-      completionTime: Math.max(Number(scene.completionTime || 0), Number(progress.completionTime || 0), Number(local.completionTime || 0)),
-      isPerfectGame: !!(progress.isPerfectGame || local.isPerfectGame || scene.isPerfectGame),
-      level01Completed: !!(progress.level01Completed || local.level01Completed || scene.level01Completed)
-    };
-
-    // Clamp & aturan tambahan
-    merged.starAlpha = Math.max(0, Math.min(1, merged.starAlpha));
-    if (merged.starAwarded && merged.round < 3) merged.round = 3;
-
-    // Apply ke scene (jika memang Scene)
-    scene.level01Score = merged.level01Score;
-    scene.round = merged.round;
-    scene.starAlpha = merged.starAlpha;
-    scene.starAwarded = merged.starAwarded;
-    scene.level01HighScore = merged.level01HighScore;
-    scene.totalPlays = merged.totalPlays;
-    scene.bestTime = merged.bestTime;
-    scene.averageTime = merged.averageTime;
-    scene.completionRate = merged.completionRate;
-    scene.perfectGames = merged.perfectGames;
-    scene.totalAttempts = merged.totalAttempts;
-    scene.completionTime = merged.completionTime;
-    scene.isPerfectGame = merged.isPerfectGame;
-    scene.level01Completed = merged.level01Completed;
-
-    // User status dari backend
-    scene.newUser = progressRes.newUser || false;
-    scene.winUser = progressRes.winUser || false;
-    scene.lossUser = progressRes.lossUser || false;
-    scene.isGameOver = progressRes.isGameOver || false;
-
-    // Registry sync
-    scene.registry?.set('level01Score', scene.level01Score);
-    scene.registry?.set('round', scene.round);
-    scene.registry?.set('starAlpha', scene.starAlpha);
-    scene.registry?.set('starAwarded', scene.starAwarded);
-
-    // UI sync
-    scene.ensureStarIcon?.();
-    if (scene.scoreText?.setText) {
-      scene.scoreText.setText(String(scene.level01Score || 0).padStart(5, '0'));
+    
+  } catch (error) {
+    console.warn('❌ Backend initialization failed, using localStorage fallback:', error);
+    
+    // ✅ 7. FALLBACK KE LOCALSTORAGE + DEFAULT VALUES
+    let userData = JSON.parse(localStorage.getItem(`gameData-${email}`)) || {};
+    
+    if (userData.gameProgress) {
+      // Update dari localStorage yang ada
+      this.level01Score = userData.gameProgress.level01Score || 0;
+      this.starAlpha = userData.gameProgress.starAlpha || 0;
+      //this.starBronzeBlackHorse = userData.gameProgress.starBronzeBlackHorse || 0;
+      this.starAwarded = userData.gameProgress.starAwarded || false;
+      this.level01HighScore = userData.gameProgress.level01HighScore || 0;
+      this.totalPlays = userData.gameProgress.totalPlays || 0;
+      
+     // Kalkulasi user status dari localStorage (konsisten dengan backend)
+      this.newUser = !userData.gameProgress || userData.gameProgress.totalPlays === 0;
+      this.winUser = userData.gameProgress && userData.gameProgress.totalPlays >= 1 && (userData.gameProgress.level01Score || 0) > 0;
+      this.lossUser = userData.gameProgress && userData.gameProgress.totalPlays >= 3 && (userData.gameProgress.level01Score || 0) === 0;
+      this.isGameOver = this.lossUser;
+      
+      console.log(`📥 User data loaded from localStorage fallback:`, {
+        level01Score: this.level01Score,
+        totalPlays: this.totalPlays,
+        newUser: this.newUser,
+        winUser: this.winUser,
+        lossUser: this.lossUser
+      });
+    } else {
+      // ✅ 8. DEFAULT INITIALIZATION UNTUK USER BARU
+      this.level01Score = 0;
+      this.starAlpha = 0;
+      //this.starBronzeBlackHorse = 0;
+      this.starAwarded = false;
+      this.level01HighScore = 0;
+      this.totalPlays = 0;
+      this.bestTime = 0;
+      this.averageTime = 0;
+      this.completionRate = 0;
+      this.perfectGames = false;
+      this.totalAttempts = 0;
+      this.completionTime = 0;
+      this.isPerfectGame = false;
+      this.level01Completed = false;
+      
+      // User status untuk user baru
+      this.newUser = true;
+      this.winUser = false;
+      this.lossUser = false;
+      this.isGameOver = false;
+      
+    // ✅ 9. SAVE DEFAULT DATA KE LOCALSTORAGE DAN BACKEND
+      userData = {
+        gameProgress: {
+          level01Completed: false,
+          level01Score: 0,
+          level01HighScore: 0,
+          totalPlays: 0,
+          bestTime: 0,
+          averageTime: 0,
+          completionRate: 0,
+          perfectGames: false,
+          totalAttempts: 0,
+          completionTime: 0,
+          isPerfectGame: false,
+          starAlpha: 0,
+          //starBronzeBlackHorse: 0,
+          starAwarded: false,
+        },
+        newUser: true,
+        winUser: false,
+        lossUser: false,
+        isGameOver: false,
+        initializedFromDefault: true,
+        lastSyncFromBackend: new Date().toISOString()
+      };
+      localStorage.setItem(`gameData-${email}`, JSON.stringify(userData));
+      
+      // ✅ 10. SYNC DEFAULT DATA KE BACKEND
+      try {
+        await this.updateUserProgress(email, userData.gameProgress);
+        console.log(`✅ Default user data synced to backend for new user: ${email}`);
+      } catch (syncError) {
+        console.warn('❌ Failed to sync default data to backend:', syncError);
+      }
+      
+      console.log(`🆕 New user initialized with default data: ${email}`);
     }
-    scene.refreshStarVisibility?.(); // pastikan fungsi ini pakai offset +45
+    
+    // ✅ 11. UPDATE WINDOW GLOBAL DARI FALLBACK/DEFAULT
+    window.level01Score = this.level01Score;
+    window.starAlpha = this.starAlpha;
+    //window.starBronzeBlackHorse = this.starBronzeBlackHorse;
+    window.starAwarded = this.starAwarded;
 
-    // Globals
-    window.level01Score = scene.level01Score;
-    window.starAlpha = scene.starAlpha;
-    window.starAwarded = scene.starAwarded;
-    window.round = scene.round;
-
-    // Persist lokal (backup)
-    const ud = JSON.parse(localStorage.getItem(`gameData-${email}`) || '{}');
-    ud.gameProgress = { ...(ud.gameProgress || {}), ...merged, lastSaved: new Date().toISOString() };
-    localStorage.setItem(`gameData-${email}`, JSON.stringify(ud));
-
-    console.log('✅ initUserData merged:', {
-      score: scene.level01Score,
-      round: scene.round,
-      starAlpha: scene.starAlpha,
-      starAwarded: scene.starAwarded
-    });
-
+    // Update UI jika sudah ada
+    if (this.scoreText) {
+      this.scoreText.setText(this.level01Score.toString().padStart(5, '0'));
+    }
+    
     return {
       success: true,
-      source: 'backend',
-      progress: merged,
+      source: 'fallback',
+      progress: userData.gameProgress,
       userStatus: {
-        newUser: scene.newUser,
-        winUser: scene.winUser,
-        lossUser: scene.lossUser,
-        isGameOver: scene.isGameOver
+        newUser: this.newUser,
+        winUser: this.winUser,
+        lossUser: this.lossUser,
+        isGameOver: this.isGameOver
       }
     };
-  } catch (error) {
-    console.warn('❌ initUserData fallback:', error.message);
-
-    // Fallback lokal
-    let local = {};
-    try {
-      local = (JSON.parse(localStorage.getItem(`gameData-${email}`) || '{}').gameProgress) || {};
-    } catch {}
-
-    const scene = this;
-    const merged = {
-      level01Score: Math.max(Number(scene.level01Score || 0), Number(local.level01Score || 0)),
-      round: Math.max(Number(scene.round || 1), Number(local.round || 1)),
-      starAlpha: Math.max(Number(scene.starAlpha || 0), Number(local.starAlpha || 0)),
-      starAwarded: (scene.starAwarded === true) || (local.starAwarded === true)
-    };
-    merged.starAlpha = Math.max(0, Math.min(1, merged.starAlpha));
-    if (merged.starAwarded && merged.round < 3) merged.round = 3;
-
-    scene.level01Score = merged.level01Score;
-    scene.round = merged.round;
-    scene.starAlpha = merged.starAlpha;
-    scene.starAwarded = merged.starAwarded;
-
-    scene.registry?.set('level01Score', scene.level01Score);
-    scene.registry?.set('round', scene.round);
-    scene.registry?.set('starAlpha', scene.starAlpha);
-    scene.registry?.set('starAwarded', scene.starAwarded);
-
-    scene.ensureStarIcon?.();
-    if (scene.scoreText?.setText) {
-      scene.scoreText.setText(String(scene.level01Score || 0).padStart(5, '0'));
-    }
-    scene.refreshStarVisibility?.();
-
-    window.level01Score = scene.level01Score;
-    window.starAlpha = scene.starAlpha;
-    window.starAwarded = scene.starAwarded;
-    window.round = scene.round;
-
-    return { success: true, source: 'fallback', progress: merged };
   }
-};
+}
+
+
 
 // ========== ENHANCED SECURE LOGIN & PAYMENT SYSTEM ==========
 // ✅ GLOBAL VARIABLES:
