@@ -690,8 +690,8 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
     Object.assign(overlay.style, {
     position: 'fixed',
     left: '50%',
-    top: '50%',
-    transform: 'translate(-50%,-50%)',
+    top: '12px',                    // atur supaya berada tepat di atas tulisan "BLACK HORSE"
+    transform: 'translateX(-50%)',
     background: 'rgba(0,0,0,0.82)',
     color: '#0ff',
     font: '12px monospace',
@@ -699,9 +699,9 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
     borderRadius: '10px',
     width: '520px',
     maxWidth: '90vw',
-    maxHeight: '60vh',
+    maxHeight: '200px',
     overflow: 'hidden',
-    zIndex: '99999',
+    zIndex: '10001',                // pastikan di atas header
     display: 'flex',
     flexDirection: 'column', gap: '6px', pointerEvents: 'auto' 
     });
