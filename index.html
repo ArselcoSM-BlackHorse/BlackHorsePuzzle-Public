@@ -688,11 +688,22 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
     const overlay = document.createElement('div');
     overlay.id = '_lusi_audit_rt_container';
     Object.assign(overlay.style, {
-     position: 'fixed', top: '64px', right: '8px',   // turun di bawah login
-      background: 'rgba(0,0,0,0.78)', color: '#0ff',
-      font: '12px monospace', padding: '6px 8px',      borderRadius: '10px', maxWidth: '360px', maxHeight: '260px',
-      overflow: 'hidden', zIndex: '900', display: 'flex', // z-index lebih rendah dari loginBox (1000)
-      flexDirection: 'column', gap: '6px', pointerEvents: 'auto' 
+    position: 'fixed',
+    left: '50%',
+    top: '50%',
+    transform: 'translate(-50%,-50%)',
+    background: 'rgba(0,0,0,0.82)',
+    color: '#0ff',
+    font: '12px monospace',
+    padding: '8px 10px',
+    borderRadius: '10px',
+    width: '520px',
+    maxWidth: '90vw',
+    maxHeight: '60vh',
+    overflow: 'hidden',
+    zIndex: '99999',
+    display: 'flex',
+    flexDirection: 'column', gap: '6px', pointerEvents: 'auto' 
     });
 
     const header = document.createElement('div');
