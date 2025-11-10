@@ -670,6 +670,13 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
 <button id="logoutBtn" style="display:none;">Logout</button>-->
     <!-- === End form login === style="margin-left:10px;" dikeluarkan dari Resend Code === -->
 
+    <!-- add Lusi audit (dev only) - load BEFORE Scenes -->
+    <script src="./lusiAudit.js"></script>
+    <!-- optional: auto-install in dev (remove in production) -->
+    <!--<script>/* dev only */ try{ window.installLusiAudit && window.installLusiAudit(); }catch(e){}</script>-->
+
+
+
      <!-- Load main.js -->
     <script src="https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/SplashScene.js"></script>
     <script src="https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js"></script>
@@ -982,7 +989,72 @@ try {
     };
   }
 }
+//================================= BATAS INIT USER DATA ==================================
+// ========== GLOBAL WAKE LEVEL01SCENE HANDLER ==========
+// Pasang sekali: click/ENTER/ESC akan membangunkan Level01Scene jika sedang sleep
+window.installGlobalWakeShortcut = function installGlobalWakeShortcut() {
+  if (window.__wakeInstalled) return;
+  window.__wakeInstalled = true;
 
+  window.wakeLevel01 = function wakeLevel01() {
+    try {
+      const game = window.game;
+      if (!game?.scene) return false;
+      const lvl1 = game.scene.getScene?.('Level01Scene');
+      if (!lvl1 || !lvl1.scene?.isSleeping?.()) return false;
+
+      // Tutup scene yang menutup L1 (opsional)
+      ['SplashScene','Level02Scene'].forEach(k => {
+        const s = game.scene.getScene?.(k);
+        if (s?.scene?.isActive?.()) s.scene.stop();
+      });
+
+      // Bangunkan + pastikan terlihat
+      lvl1.scene.wake();
+      lvl1.scene.bringToTop?.();
+      const cam = lvl1.cameras?.main;
+      cam?.resetFX?.();
+      cam?.setAlpha?.(1);
+      cam?.setVisible?.(true);
+
+      window.hideResumeHint?.();
+      return true;
+    } catch (e) {
+      console.warn('wakeLevel01 failed:', e?.message);
+      return false;
+    }
+  };
+
+  const wakeHandler = () => window.wakeLevel01();
+
+  // Global input
+  document.addEventListener('pointerdown', wakeHandler, { passive: true });
+  document.addEventListener('keydown', (e) => {
+    if (e.code === 'Enter' || e.code === 'Space' || e.code === 'Escape') wakeHandler();
+  });
+};
+window.installGlobalWakeShortcut?.();
+//-------------------------------------------------------------------------------------------------------
+// ========== MERGE PROGRESS FUNCTION ==========
+// Menggabungkan progress dari transition (data) dan cache (localStorage)
+  window.mergeProgress = function(data, cache){
+    const out = {};
+    // dari transition (data)
+    if (data) {
+      if (data.preserveScore && typeof data.level01Score === 'number') out.level01Score = data.level01Score;
+      if (typeof data.round === 'number')      out.round      = data.round;
+      if (typeof data.starAlpha === 'number')  out.starAlpha  = data.starAlpha;
+      if (data.starAwarded === true)           out.starAwarded = true;
+    }
+    // dari cache (localStorage gameProgress)
+    if (cache) {
+      if (typeof cache.level01Score === 'number') out.level01Score = Math.max(out.level01Score||0, cache.level01Score);
+      if (typeof cache.round === 'number')        out.round       = Math.max(out.round||1, cache.round);
+      if (typeof cache.starAlpha === 'number')    out.starAlpha   = Math.max(out.starAlpha||0, cache.starAlpha);
+      if (cache.starAwarded === true)             out.starAwarded = true;
+    }
+    return out;
+  };
 
 
 // ========== ENHANCED SECURE LOGIN & PAYMENT SYSTEM ==========
