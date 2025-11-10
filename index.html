@@ -819,6 +819,16 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
           mgrProto[fn] = function(...args) {
             try {
               const scene = args[0];
+
+              // --- insert visual separator when scene STOP occurs ---
+             if (fn === 'stop') {
+               const sep = '⚡────────── Scene Transition ──────────⚡';
+               // push to all audit stores (safePush defined earlier)
+               safePush(window._LUSI_AUDIT_RT.events, sep);
+               safePush(window._LUSI_AUDIT.events, sep);
+               safePush(window.__LUSI_AUDIT.events, sep);
+               try { window._LUSI_AUDIT_RT._append && window._LUSI_AUDIT_RT._append(sep); } catch(e){}
+             }
               window._LUSI_AUDIT_RT.log('SCENE', `${fn.toUpperCase()} → ${scene}`);
               // also notify core LUSI audit if installed
               if (window.__LUSI_AUDIT && typeof window.__LUSI_AUDIT.log === 'function') {
