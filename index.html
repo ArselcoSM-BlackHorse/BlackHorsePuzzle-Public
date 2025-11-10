@@ -1404,6 +1404,11 @@ document.getElementById("verifyBtn").onclick = async function() {
       document.getElementById("verificationBox").style.display = "none";
       document.getElementById("logoutBtn").style.display = "inline-block";
       document.getElementById("verificationCodeInput").value = "";
+
+      // <-- persist sebelum memulai SplashScene (verify flow)
+      window.persistProgressSnapshot && window.persistProgressSnapshot(localStorage.getItem('email'), { saveSource: 'verify' });
+
+
       if (window.Phaser && window.game && window.game.scene) {
         //window.game.scene.start("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/SplashScene.js");
         window.game.scene.start("SplashScene"); // ✅ BENAR
