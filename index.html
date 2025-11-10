@@ -590,6 +590,11 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
       document.getElementById('entranceGameBtn').onclick = function() {
         document.getElementById('landingOverlay').style.display = 'none';
         window.sessionStorage.setItem('bhpWarningShown', '1');
+
+        // <-- tambahkan persist di sini, minimal snapshot sebelum start scene
+        window.persistProgressSnapshot && window.persistProgressSnapshot(localStorage.getItem('email'), { saveSource: 'entranceButton' });
+
+
         // Start SplashScene if Phaser game is ready
         if (window.game && window.game.scene && window.game.scene.isActive) {
           // If SplashScene is not already active, start it
@@ -1233,6 +1238,33 @@ window.installGlobalWakeShortcut?.();
     }
     return out;
   };
+
+// --- persist minimal snapshot helper (taruh setelah fungsi mergeProgress atau di area utils) ---
+window.persistProgressSnapshot = function(email, extra = {}) {
+  try {
+    if (!email) return;
+    const key = `gameData-${email}`;
+    const cur = JSON.parse(localStorage.getItem(key) || '{}');
+    cur.gameProgress = cur.gameProgress || {};
+
+    // Fields that MUST be persisted for restore/transition:
+    cur.gameProgress.level01Score    = Number(extra.level01Score ?? (window.level01Score ?? cur.gameProgress.level01Score ?? 0));
+    cur.gameProgress.round           = Number(extra.round ?? (cur.gameProgress.round ?? 1));
+    cur.gameProgress.starAlpha       = Number(extra.starAlpha ?? (window.starAlpha ?? cur.gameProgress.starAlpha ?? 0));
+    cur.gameProgress.starAwarded     = (extra.starAwarded ?? (cur.gameProgress.starAwarded || false)) === true;
+    cur.gameProgress.level01Completed= !!(extra.level01Completed ?? cur.gameProgress.level01Completed);
+    cur.gameProgress.level01HighScore= Number(extra.level01HighScore ?? cur.gameProgress.level01HighScore ?? 0);
+    cur.gameProgress.totalPlays      = Number(extra.totalPlays ?? cur.gameProgress.totalPlays ?? 0);
+    cur.gameProgress.completionTime  = Number(extra.completionTime ?? cur.gameProgress.completionTime ?? 0);
+    cur.gameProgress.isPerfectGame   = !!(extra.isPerfectGame ?? cur.gameProgress.isPerfectGame);
+    cur.gameProgress.lastSaved       = new Date().toISOString();
+    cur.gameProgress.saveSource      = extra.saveSource || 'snapshot';
+
+    localStorage.setItem(key, JSON.stringify(cur));
+    // lightweight RT audit
+    window._LUSI_AUDIT_RT && window._LUSI_AUDIT_RT.log('PERSIST', { key, gp: { level01Score: cur.gameProgress.level01Score, starAlpha: cur.gameProgress.starAlpha, starAwarded: cur.gameProgress.starAwarded }});
+  } catch (e) { console.warn('persistProgressSnapshot failed', e); }
+};
 
 
 // ========== ENHANCED SECURE LOGIN & PAYMENT SYSTEM ==========
@@ -2026,6 +2058,10 @@ async function startPaymentMonitoring(email) {
 
 async function performSecureLogout() {
   const email = localStorage.getItem('email');
+
+  // <-- persist minimal snapshot immediately when logout starts
+  window.persistProgressSnapshot && window.persistProgressSnapshot(email, { saveSource: 'logout' });
+
   let winUser = false;
  if (email && localStorage.getItem(`gameData-${email}`)) {
     const gameData = JSON.parse(localStorage.getItem(`gameData-${email}`));
