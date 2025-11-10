@@ -670,12 +670,80 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
 <button id="logoutBtn" style="display:none;">Logout</button>-->
     <!-- === End form login === style="margin-left:10px;" dikeluarkan dari Resend Code === -->
 
+
+<script>
+(() => {
+  if (window._LUSI_AUDIT_RT) return console.log('LUSI RT already installed');
+
+  function createOverlay() {
+    const overlay = document.createElement("div");
+    overlay.id = "_lusi_audit_rt_container";
+    Object.assign(overlay.style, { position:"fixed", top:"8px", right:"8px",
+      background:"rgba(0,0,0,0.75)", color:"#0ff", font:"12px monospace",
+      padding:"6px 8px", borderRadius:"10px", maxWidth:"320px", maxHeight:"220px",
+      overflow:"hidden", zIndex:"99999", display:"flex", flexDirection:"column",
+      gap:"4px", pointerEvents:"auto" });
+
+    const pre = document.createElement("pre");
+    Object.assign(pre.style, { margin:0, whiteSpace:"pre-wrap", overflow:"hidden", flex:1 });
+
+    const btn = document.createElement("button");
+    btn.textContent = "Clear Logs";
+    Object.assign(btn.style, { background:"#022", color:"#0ff", border:"1px solid #0ff",
+      borderRadius:"6px", padding:"2px 8px", cursor:"pointer", alignSelf:"flex-end" });
+    btn.onclick = () => { if (window._LUSI_AUDIT_RT) window._LUSI_AUDIT_RT.events.length = 0; pre.textContent = ""; };
+
+    overlay.append(pre, btn);
+    document.body.appendChild(overlay);
+
+    window._LUSI_AUDIT_RT = {
+      events: [],
+      log(tag, info) {
+        const msg = `[${new Date().toLocaleTimeString()}] ${tag}: ${info}`;
+        this.events.push(msg);
+        pre.textContent = this.events.slice(-10).join("\n");
+        console.log("🟣 RT:", msg);
+      }
+    };
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', createOverlay, { once: true });
+  } else {
+    createOverlay();
+  }
+
+  // safe-wrap SceneManager (idempotent)
+  try {
+    const mgrProto = Phaser?.Scenes?.SceneManager?.prototype;
+    if (mgrProto) {
+      ["start","stop","sleep","wake","pause","resume"].forEach(fn=>{
+        const origName = '__lusi_orig_' + fn;
+        if (!mgrProto[origName] && typeof mgrProto[fn] === 'function') {
+          mgrProto[origName] = mgrProto[fn];
+          mgrProto[fn] = function(...args){
+            try {
+              window._LUSI_AUDIT_RT?.log("SCENE", `${fn.toUpperCase()} → ${args[0]}`);
+              if (window.__LUSI_AUDIT && typeof window.__LUSI_AUDIT.log === 'function') {
+                try { window.__LUSI_AUDIT.log("SCENE", `${fn.toUpperCase()} → ${args[0]}`); } catch(e){}
+              }
+            } catch(e){}
+            return mgrProto[origName].apply(this, args);
+          };
+        }
+      });
+    }
+  } catch(e){ console.warn('LUSI RT wrap fail', e); }
+
+  console.log("✅ Dual Audit aktif: Real-Time + Copilot (safe)");
+})();
+</script>
+
+
     <!-- add Lusi audit (dev only) - load BEFORE Scenes -->
     <script src="./lusiAudit.js"></script>
     <!-- optional: auto-install in dev (remove in production) -->
     <!--<script>/* dev only */ try{ window.installLusiAudit && window.installLusiAudit(); }catch(e){}</script>-->
-
-
 
      <!-- Load main.js -->
     <script src="https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/SplashScene.js"></script>
