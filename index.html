@@ -395,13 +395,6 @@ window.updateGamePaymentStatus = function(isPaid, method = null, additionalData 
       return;
     }
     
-    // 1) IGNORE late false jika sudah sukses sesi ini
-  if (window.sessionPaymentOK === true && isPaid === false) {
-    console.log('⏭️ Ignored stale isPaid=false (session already verified)');
-    return;
-  }
-
-
     // ✅ EXPLICIT isPaid FLAG
     const userData = JSON.parse(localStorage.getItem(`gameData-${email}`)) || {};
     userData.isPaid = isPaid === true; // Pastikan boolean
@@ -432,12 +425,6 @@ window.updateGamePaymentStatus = function(isPaid, method = null, additionalData 
     return;
   }
 
-   // 3) Block unlock jika belum diverifikasi sesi ini
-  if (isPaid === true && window.sessionPaymentOK !== true) {
-    console.log('🛡️ Block unlock (not session payment)');
-    return;
-  }
-
   // Drive UI
   const scene = window.game?.scene?.getScene('Level01Scene');
 
@@ -448,33 +435,24 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
 }
 
   if (isPaid === true) {
-    scene.isPaid = true;
-    scene.isGameOver = false;
-    scene.isGameOverClosed = false;
     scene.hideGameLockMessage?.();
     scene.unblur10PuzzleButton?.(true);
     scene.unlockGameAfterPurchase?.(true);
     window.unlockPlayAndHideGameOver?.();
   } else {
     // Opsional: tetap kunci
-     // Hanya lock jika memang BELUM pernah bayar di sesi ini
-    if (!window.sessionPaymentOK) {
     scene.blur10PuzzleButton?.();
     scene.lockAllGameplayButtons?.();
     // pastikan donasi juga terkunci
     if (scene.donationBtn) { scene.donationBtn.disableInteractive(); scene.donationBtn.setAlpha(0.5); }
     window.lockPlayAndShowGameOver?.();
-   } else {
-      console.log('🔓 Skip locking (session already paid)');
-    } 
   }
 
   console.log('💳 Payment status updated:', {
     isPaid: isPaid === true,
     method,
-    sessionOK: window.sessionPaymentOK
-    //transactionId: additionalData.transactionId,
-    //amount: additionalData.amount
+    transactionId: additionalData.transactionId,
+    amount: additionalData.amount
   });
 };
 </script>
@@ -1386,55 +1364,81 @@ window.verifyEmailWithBackend = async function(email) {
   }
 };
 
-window.lockPlayAndShowGameOver = function() {
-  const s = window.game?.scene?.getScene('Level01Scene');
-  if (!s || !s.sys || s.sys.isDestroyed) {
-    localStorage.setItem('__pendingLock', '1');
-    localStorage.removeItem('__pendingUnlock');
-    return;
-  }
-  localStorage.removeItem('__pendingLock');
-  s.isGameOver = true;
-  s.blur10PuzzleButton?.();
-  s.lockAllGameplayButtons?.();
-  s.showGameOverReturnMessage?.();
-  console.log('🔒 Game locked');
-};
-
-window.unlockPlayAndHideGameOver = function() {
-  const s = window.game?.scene?.getScene('Level01Scene');
-  if (!s || !s.sys || s.sys.isDestroyed) {
-    localStorage.setItem('__pendingUnlock', '1');
-    // pastikan lock dibatalkan agar tidak diproses setelah ready
-    localStorage.removeItem('__pendingLock');
-    return;
-  }
-  localStorage.removeItem('__pendingUnlock');
-  localStorage.removeItem('__pendingLock');
-
-  if (s.lv01Puzzle10Btn) {
-    s.lv01Puzzle10Btn.setInteractive();
-    s.lv01Puzzle10Btn.setAlpha(1);
-  }
-  if (s.gameOverReturnElements) {
-    s.gameOverReturnElements.forEach(el=>el&&el.destroy());
-    s.gameOverReturnElements = null;
-  }
-  if (s.gameOverImg) { s.gameOverImg.destroy(); s.gameOverImg = null; }
-
-  // Bersihkan panel pembayaran jika ada
-  ['payPanel','payText','payQR','payBtn','cancelBtn'].forEach(k=>{
-    if (s[k]) { s[k].destroy?.(); s[k]=null; }
+// yg baru pindah di unlock di atas line 1366  
+window.lockPlayAndShowGameOver = function() { 
+  setTimeout(() => {
+    const level01 = window.game?.scene?.getScene("Level01Scene");
+    if (!level01) {
+      console.warn('Level01Scene not found!');
+      return;
+    }
+    
+    if (level01.lv01Puzzle10Btn && typeof level01.lv01Puzzle10Btn.disableInteractive === 'function') {
+      level01.lv01Puzzle10Btn.disableInteractive();
+      level01.lv01Puzzle10Btn.setAlpha(0.5);
+    }
+    if (window.lockPlayButton) window.lockPlayButton();
   });
+}
 
-  s.isGameOver = false;
-  s.isGameOverClosed = false;
-  s.hideGameLockMessage?.();
-  s.unblur10PuzzleButton?.(true);
-  s.unlockGameAfterPurchase?.(true);
+// Tambahkan fungsi unlock global
+window.unlockPlayAndHideGameOver = function() {
+  // Dapatkan scene Level01Scene
+  //const level01 = window.game && window.game.scene && window.game.scene.getScene("Level01Scene");
+  //if (!level01) return;
+  const level01 = window.game?.scene?.getScene("Level01Scene");
+  if (!level01 || !level01.sys || level01.sys.isDestroyed) return;
 
-   console.log('✅ Game unlocked');
+  // Aktifkan tombol Play & 10 Puzzle
+  //if (level01.playBtn) {
+    //level01.playBtn.setInteractive();
+    //level01.playBtn.setAlpha(1);
+  //}
+  if (level01.lv01Puzzle10Btn) {
+    level01.lv01Puzzle10Btn.setInteractive();
+    level01.lv01Puzzle10Btn.setAlpha(1);
+  }
+
+  // Hilangkan panel Game Over jika ada
+  if (level01.gameOverReturnElements) {
+    level01.gameOverReturnElements.forEach(el => el && el.destroy());
+    level01.gameOverReturnElements = null;
+  }
+  if (level01.gameOverImg) {
+    level01.gameOverImg.destroy();
+    level01.gameOverImg = null;
+  }
+
+  // Hapus panel konfirmasi pembayaran jika ada (line 3342, 3346)
+  if (level01.payPanel) {
+    level01.payPanel.destroy();
+    level01.payPanel = null;
+  }
+  if (level01.payText) {
+    level01.payText.destroy();
+    level01.payText = null;
+  }
+  if (level01.payQR) {
+    level01.payQR.destroy();
+    level01.payQR = null;
+  }
+  if (level01.payBtn) {
+    level01.payBtn.destroy();
+    level01.payBtn = null;
+  }
+  if (level01.cancelBtn) {
+    level01.cancelBtn.destroy();
+    level01.cancelBtn = null;
+  }
+
+  // Reset flag Game Over
+  level01.isGameOver = false;
+  level01.isGameOverClosed = false;
+
+  // (Opsional) Log
+  console.log('✅ Game unlocked: Play & Puzzle enabled, Game Over & payment panel hidden');
 };
+
 
 console.log('✅ REAL BACKEND VERIFICATION READY - CONNECT TO RENDER.COM');
 
@@ -2037,22 +2041,7 @@ function stopPaymentMonitoring() {
   console.log('📊 level01Score updated for', email, newScore);
 }
          
-// yg baru pindah di unlock di atas line 1366  
-//window.lockPlayAndShowGameOver = function() { 
-  //setTimeout(() => {
-    //const level01 = window.game?.scene?.getScene("Level01Scene");
-    //if (!level01) {
-      //console.warn('Level01Scene not found!');
-      //return;
-    //}
-    
-    //if (level01.lv01Puzzle10Btn && typeof level01.lv01Puzzle10Btn.disableInteractive === 'function') {
-      //level01.lv01Puzzle10Btn.disableInteractive();
-      //level01.lv01Puzzle10Btn.setAlpha(0.5);
-    //}
-    //if (window.lockPlayButton) window.lockPlayButton();
-  //});
-//}
+
 
 
     // ✅ COMPREHENSIVE SAFETY CHECK:
