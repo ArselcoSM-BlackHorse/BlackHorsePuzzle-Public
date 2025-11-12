@@ -385,8 +385,7 @@ window.checkPaymentStatus = async function(email) {
   console.log('💳 Payment check result:', result);
   return result;
 };
-
-// 3. Fungsi update status pembayaran game
+// This function updates the game payment status and UI based on the payment state
 // ✅ ENHANCED GAME PAYMENT STATUS UPDATE WITH isPaid FLAG:
 window.updateGamePaymentStatus = function(isPaid, method = null, additionalData = {}) {
     const email = localStorage.getItem("email");
@@ -591,11 +590,6 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
       document.getElementById('entranceGameBtn').onclick = function() {
         document.getElementById('landingOverlay').style.display = 'none';
         window.sessionStorage.setItem('bhpWarningShown', '1');
-
-        // <-- tambahkan persist di sini, minimal snapshot sebelum start scene
-        window.persistProgressSnapshot && window.persistProgressSnapshot(localStorage.getItem('email'), { saveSource: 'entranceButton' });
-
-
         // Start SplashScene if Phaser game is ready
         if (window.game && window.game.scene && window.game.scene.isActive) {
           // If SplashScene is not already active, start it
@@ -675,7 +669,6 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
 <!--
 <button id="logoutBtn" style="display:none;">Logout</button>-->
     <!-- === End form login === style="margin-left:10px;" dikeluarkan dari Resend Code === -->
-
 
      <!-- Load main.js -->
     <script src="https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/SplashScene.js"></script>
@@ -769,6 +762,7 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 //================================= BATAS VISIBILITY CHANGE =================================
+// Definisikan di luar create()
 window.initUserData = async function(email, userData = null) {
 try {
     console.log(`🔄 Initializing user data for: ${email}`);
@@ -780,21 +774,9 @@ try {
       // ✅ 2. UPDATE SEMUA INSTANCE PROPERTIES DARI BACKEND
       const progress = progressRes.progress;
       
-      // ✅ PRIORITASKAN SCORE, ROUND, STAR DARI BACKEND
+      // ✅ PRIORITASKAN SCORE DARI BACKEND
       if (typeof progress.level01Score === 'number' && progress.level01Score > 0) {
         this.level01Score = progress.level01Score;
-      }
-      if (typeof progress.round === 'number') {
-        this.round = progress.round;
-      }
-      if (typeof progress.starAlpha === 'number') {
-        this.starAlpha = clamp01(progress.starAlpha);
-      }
-      if (this.starAlpha > 0 && this.starBronzeBlackHorse) {
-          this.starBronzeBlackHorse.setAlpha(this.starAlpha);
-      }  
-      if (typeof progress.starAwarded === 'boolean') {
-        this.starAwarded = progress.starAwarded;
       } else {
         // Fallback ke localStorage jika backend score 0 tapi local ada score
         const userDataLocal = JSON.parse(localStorage.getItem(`gameData-${email}`)) || {};
@@ -811,7 +793,7 @@ try {
       this.level01Score = progress.level01Score || 0;
       this.starAlpha = progress.starAlpha || 0;
       this.starAwarded = progress.starAwarded || false;
-      //this.starBronzeBlackHorse = progress.starBronzeBlackHorse || 0;
+      this.starBronzeBlackHorseAlpha = progress.starBronzeBlackHorseAlpha || 0;
       this.level01HighScore = progress.level01HighScore || 0;
       this.totalPlays = progress.totalPlays || 0;
       this.bestTime = progress.bestTime || 0;
@@ -886,7 +868,7 @@ try {
       // Update dari localStorage yang ada
       this.level01Score = userData.gameProgress.level01Score || 0;
       this.starAlpha = userData.gameProgress.starAlpha || 0;
-      //this.starBronzeBlackHorse = userData.gameProgress.starBronzeBlackHorse || 0;
+      this.starBronzeBlackHorseAlpha = userData.gameProgress.starBronzeBlackHorseAlpha || 0;
       this.starAwarded = userData.gameProgress.starAwarded || false;
       this.level01HighScore = userData.gameProgress.level01HighScore || 0;
       this.totalPlays = userData.gameProgress.totalPlays || 0;
@@ -908,7 +890,7 @@ try {
       // ✅ 8. DEFAULT INITIALIZATION UNTUK USER BARU
       this.level01Score = 0;
       this.starAlpha = 0;
-      //this.starBronzeBlackHorse = 0;
+      this.starBronzeBlackHorseAlpha = 0;
       this.starAwarded = false;
       this.level01HighScore = 0;
       this.totalPlays = 0;
@@ -942,7 +924,7 @@ try {
           completionTime: 0,
           isPerfectGame: false,
           starAlpha: 0,
-          //starBronzeBlackHorse: 0,
+          starBronzeBlackHorseAlpha: 0,
           starAwarded: false,
         },
         newUser: true,
@@ -968,7 +950,7 @@ try {
     // ✅ 11. UPDATE WINDOW GLOBAL DARI FALLBACK/DEFAULT
     window.level01Score = this.level01Score;
     window.starAlpha = this.starAlpha;
-    //window.starBronzeBlackHorse = this.starBronzeBlackHorse;
+    window.starBronzeBlackHorseAlpha = this.starBronzeBlackHorseAlpha;
     window.starAwarded = this.starAwarded;
 
     // Update UI jika sudah ada
@@ -989,100 +971,6 @@ try {
     };
   }
 }
-//================================= BATAS INIT USER DATA ==================================
-// ========== GLOBAL WAKE LEVEL01SCENE HANDLER ==========
-// Pasang sekali: click/ENTER/ESC akan membangunkan Level01Scene jika sedang sleep
-window.installGlobalWakeShortcut = function installGlobalWakeShortcut() {
-  if (window.__wakeInstalled) return;
-  window.__wakeInstalled = true;
-
-  window.wakeLevel01 = function wakeLevel01() {
-    try {
-      const game = window.game;
-      if (!game?.scene) return false;
-      const lvl1 = game.scene.getScene?.('Level01Scene');
-      if (!lvl1 || !lvl1.scene?.isSleeping?.()) return false;
-
-      // Tutup scene yang menutup L1 (opsional)
-      ['SplashScene','Level02Scene'].forEach(k => {
-        const s = game.scene.getScene?.(k);
-        if (s?.scene?.isActive?.()) s.scene.stop();
-      });
-
-      // Bangunkan + pastikan terlihat
-      lvl1.scene.wake();
-      lvl1.scene.bringToTop?.();
-      const cam = lvl1.cameras?.main;
-      cam?.resetFX?.();
-      cam?.setAlpha?.(1);
-      cam?.setVisible?.(true);
-
-      window.hideResumeHint?.();
-      return true;
-    } catch (e) {
-      console.warn('wakeLevel01 failed:', e?.message);
-      return false;
-    }
-  };
-
-  const wakeHandler = () => window.wakeLevel01();
-
-  // Global input
-  document.addEventListener('pointerdown', wakeHandler, { passive: true });
-  document.addEventListener('keydown', (e) => {
-    if (e.code === 'Enter' || e.code === 'Space' || e.code === 'Escape') wakeHandler();
-  });
-};
-window.installGlobalWakeShortcut?.();
-//-------------------------------------------------------------------------------------------------------
-// ========== MERGE PROGRESS FUNCTION ==========
-// Menggabungkan progress dari transition (data) dan cache (localStorage)
-  window.mergeProgress = function(data, cache){
-    const out = {};
-    // dari transition (data)
-    if (data) {
-      if (data.preserveScore && typeof data.level01Score === 'number') out.level01Score = data.level01Score;
-      if (typeof data.round === 'number')      out.round      = data.round;
-      if (typeof data.starAlpha === 'number')  out.starAlpha  = data.starAlpha;
-      if (data.starAwarded === true)           out.starAwarded = true;
-    }
-    // dari cache (localStorage gameProgress)
-    if (cache) {
-      if (typeof cache.level01Score === 'number') out.level01Score = Math.max(out.level01Score||0, cache.level01Score);
-      if (typeof cache.round === 'number')        out.round       = Math.max(out.round||1, cache.round);
-      if (typeof cache.starAlpha === 'number')    out.starAlpha   = Math.max(out.starAlpha||0, cache.starAlpha);
-      if (cache.starAwarded === true)             out.starAwarded = true;
-    }
-    return out;
-  };
-
-// --- persist minimal snapshot helper (taruh setelah fungsi mergeProgress atau di area utils) ---
-window.persistProgressSnapshot = function(email, extra = {}) {
-  try {
-    if (!email) return;
-    const key = `gameData-${email}`;
-    const cur = JSON.parse(localStorage.getItem(key) || '{}');
-    cur.gameProgress = cur.gameProgress || {};
-
-    // Fields that MUST be persisted for restore/transition:
-    cur.gameProgress.level01Score    = Number(extra.level01Score ?? (window.level01Score ?? cur.gameProgress.level01Score ?? 0));
-    cur.gameProgress.round           = Number(extra.round ?? (cur.gameProgress.round ?? 1));
-    cur.gameProgress.starAlpha       = Number(extra.starAlpha ?? (window.starAlpha ?? cur.gameProgress.starAlpha ?? 0));
-    cur.gameProgress.starAwarded     = (extra.starAwarded ?? (cur.gameProgress.starAwarded || false)) === true;
-    cur.gameProgress.level01Completed= !!(extra.level01Completed ?? cur.gameProgress.level01Completed);
-    cur.gameProgress.level01HighScore= Number(extra.level01HighScore ?? cur.gameProgress.level01HighScore ?? 0);
-    cur.gameProgress.totalPlays      = Number(extra.totalPlays ?? cur.gameProgress.totalPlays ?? 0);
-    cur.gameProgress.completionTime  = Number(extra.completionTime ?? cur.gameProgress.completionTime ?? 0);
-    cur.gameProgress.isPerfectGame   = !!(extra.isPerfectGame ?? cur.gameProgress.isPerfectGame);
-    cur.gameProgress.lastSaved       = new Date().toISOString();
-    cur.gameProgress.saveSource      = extra.saveSource || 'snapshot';
-
-    localStorage.setItem(key, JSON.stringify(cur));
-    // lightweight RT audit
-    window._LUSI_AUDIT_RT && window._LUSI_AUDIT_RT.log('PERSIST', { key, gp: { level01Score: cur.gameProgress.level01Score, starAlpha: cur.gameProgress.starAlpha, starAwarded: cur.gameProgress.starAwarded }});
-  } catch (e) { console.warn('persistProgressSnapshot failed', e); }
-};
-
 
 // ========== ENHANCED SECURE LOGIN & PAYMENT SYSTEM ==========
 // ✅ GLOBAL VARIABLES:
@@ -1221,11 +1109,6 @@ document.getElementById("verifyBtn").onclick = async function() {
       document.getElementById("verificationBox").style.display = "none";
       document.getElementById("logoutBtn").style.display = "inline-block";
       document.getElementById("verificationCodeInput").value = "";
-
-      // <-- persist sebelum memulai SplashScene (verify flow)
-      window.persistProgressSnapshot && window.persistProgressSnapshot(localStorage.getItem('email'), { saveSource: 'verify' });
-
-
       if (window.Phaser && window.game && window.game.scene) {
         //window.game.scene.start("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/SplashScene.js");
         window.game.scene.start("SplashScene"); // ✅ BENAR
@@ -1364,75 +1247,11 @@ window.verifyEmailWithBackend = async function(email) {
   }
 };
 
-// yg baru pindah di unlock di atas line 1366  
-window.lockPlayAndShowGameOver = function() { 
-  setTimeout(() => {
-    const level01 = window.game?.scene?.getScene("Level01Scene");
-    if (!level01) {
-      console.warn('Level01Scene not found!');
-      return;
-    }
-    
-    // Kumpulkan calon tombol interaktif (sesuaikan nama variabel yang ada di scene)
-  const candidates = [
-    scene.playBtn,
-    scene.playButton,
-    scene.sheriffPlayBtn,
-    scene.startBtn,
-    scene.roundPlayBtn
-  ];
-
-  candidates.forEach(btn => {
-    if (btn && typeof btn.disableInteractive === 'function') {
-      try {
-        // Pastikan masih punya scene valid
-        if (!btn.scene || !btn.scene.sys || btn.scene.sys.isDestroyed) {
-          console.warn('⚠️ Skip disableInteractive (scene invalid).');
-          return;
-        }
-        btn.disableInteractive();
-      } catch (e) {
-        console.warn('❌ disableInteractive failed:', e);
-      }
-    }
-  });
-
-  // Tampilkan panel Game Over aman
-  if (scene.showGameOverReturnMessage) {
-    try { scene.showGameOverReturnMessage(); } catch {}
-  }
-
-    if (level01.lv01Puzzle10Btn && typeof level01.lv01Puzzle10Btn.disableInteractive === 'function') {
-      level01.lv01Puzzle10Btn.disableInteractive();
-      level01.lv01Puzzle10Btn.setAlpha(0.5);
-    }
-    if (window.lockPlayButton) window.lockPlayButton();
-  });
-  // Tambah flag agar tidak dipanggil berkali-kali
-  scene.isGameOver = true;
-}
-
 // Tambahkan fungsi unlock global
 window.unlockPlayAndHideGameOver = function() {
   // Dapatkan scene Level01Scene
-  //const level01 = window.game && window.game.scene && window.game.scene.getScene("Level01Scene");
-  //if (!level01) return;
-  const level01 = window.game?.scene?.getScene("Level01Scene");
-  if (!level01 || !level01.sys || level01.sys.isDestroyed) return;
-
-   if (!scene) return;
-  const candidates = [
-    scene.playBtn,
-    scene.playButton,
-    scene.sheriffPlayBtn,
-    scene.startBtn,
-    scene.roundPlayBtn
-  ];
-  candidates.forEach(btn => {
-    if (btn && typeof btn.setInteractive === 'function') {
-      try { btn.setInteractive({ useHandCursor: true }); } catch {}
-    }
-  });
+  const level01 = window.game && window.game.scene && window.game.scene.getScene("Level01Scene");
+  if (!level01) return;
 
   // Aktifkan tombol Play & 10 Puzzle
   //if (level01.playBtn) {
@@ -1482,7 +1301,6 @@ window.unlockPlayAndHideGameOver = function() {
 
   // (Opsional) Log
   console.log('✅ Game unlocked: Play & Puzzle enabled, Game Over & payment panel hidden');
-  scene.isGameOver = false;
 };
 
 
@@ -1945,10 +1763,6 @@ async function startPaymentMonitoring(email) {
 
 async function performSecureLogout() {
   const email = localStorage.getItem('email');
-
-  // <-- persist minimal snapshot immediately when logout starts
-  window.persistProgressSnapshot && window.persistProgressSnapshot(email, { saveSource: 'logout' });
-
   let winUser = false;
  if (email && localStorage.getItem(`gameData-${email}`)) {
     const gameData = JSON.parse(localStorage.getItem(`gameData-${email}`));
@@ -2087,8 +1901,44 @@ function stopPaymentMonitoring() {
   console.log('📊 level01Score updated for', email, newScore);
 }
          
-
-
+//window.lockPlayAndShowGameOver = function() {
+  //setTimeout(() => {
+    //const level01 = window.game?.scene?.getScene("Level01Scene");
+    //if (level01) {
+      
+      //if (level01.playBtn) {
+        //level01.playBtn.disableInteractive();
+        //level01.playBtn.setAlpha(0.5);
+        //console.log('INDEX: PlayBtn dinonaktifkan di sini', { isPaid, newUser });
+     // }
+      //if (level01.lv01Puzzle10Btn) {
+      //  level01.lv01Puzzle10Btn.disableInteractive();
+      //  level01.lv01Puzzle10Btn.setAlpha(0.5);
+     // }  
+    //}
+   // Tambahan: pastikan Play tetap terkunci
+   // if (window.lockPlayButton) window.lockPlayButton();
+  //});
+//}
+  
+window.lockPlayAndShowGameOver = function() {
+  setTimeout(() => {
+    const level01 = window.game?.scene?.getScene("Level01Scene");
+    if (!level01) {
+      console.warn('Level01Scene not found!');
+      return;
+    }
+    //if (level01.playBtn && typeof level01.playBtn.disableInteractive === 'function') {
+      //level01.playBtn.disableInteractive();
+      //level01.playBtn.setAlpha(0.5);
+    //}
+    if (level01.lv01Puzzle10Btn && typeof level01.lv01Puzzle10Btn.disableInteractive === 'function') {
+      level01.lv01Puzzle10Btn.disableInteractive();
+      level01.lv01Puzzle10Btn.setAlpha(0.5);
+    }
+    if (window.lockPlayButton) window.lockPlayButton();
+  });
+}
 
     // ✅ COMPREHENSIVE SAFETY CHECK:
     if (window.Phaser && 
