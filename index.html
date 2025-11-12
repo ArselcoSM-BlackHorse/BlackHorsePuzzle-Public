@@ -385,7 +385,8 @@ window.checkPaymentStatus = async function(email) {
   console.log('💳 Payment check result:', result);
   return result;
 };
-// This function updates the game payment status and UI based on the payment state
+
+// 3. Fungsi update status pembayaran game
 // ✅ ENHANCED GAME PAYMENT STATUS UPDATE WITH isPaid FLAG:
 window.updateGamePaymentStatus = function(isPaid, method = null, additionalData = {}) {
     const email = localStorage.getItem("email");
@@ -394,6 +395,13 @@ window.updateGamePaymentStatus = function(isPaid, method = null, additionalData 
       return;
     }
     
+    // 1) IGNORE late false jika sudah sukses sesi ini
+  if (window.sessionPaymentOK === true && isPaid === false) {
+    console.log('⏭️ Ignored stale isPaid=false (session already verified)');
+    return;
+  }
+
+
     // ✅ EXPLICIT isPaid FLAG
     const userData = JSON.parse(localStorage.getItem(`gameData-${email}`)) || {};
     userData.isPaid = isPaid === true; // Pastikan boolean
@@ -424,6 +432,12 @@ window.updateGamePaymentStatus = function(isPaid, method = null, additionalData 
     return;
   }
 
+   // 3) Block unlock jika belum diverifikasi sesi ini
+  if (isPaid === true && window.sessionPaymentOK !== true) {
+    console.log('🛡️ Block unlock (not session payment)');
+    return;
+  }
+
   // Drive UI
   const scene = window.game?.scene?.getScene('Level01Scene');
 
@@ -434,24 +448,33 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
 }
 
   if (isPaid === true) {
+    scene.isPaid = true;
+    scene.isGameOver = false;
+    scene.isGameOverClosed = false;
     scene.hideGameLockMessage?.();
     scene.unblur10PuzzleButton?.(true);
     scene.unlockGameAfterPurchase?.(true);
     window.unlockPlayAndHideGameOver?.();
   } else {
     // Opsional: tetap kunci
+     // Hanya lock jika memang BELUM pernah bayar di sesi ini
+    if (!window.sessionPaymentOK) {
     scene.blur10PuzzleButton?.();
     scene.lockAllGameplayButtons?.();
     // pastikan donasi juga terkunci
     if (scene.donationBtn) { scene.donationBtn.disableInteractive(); scene.donationBtn.setAlpha(0.5); }
     window.lockPlayAndShowGameOver?.();
+   } else {
+      console.log('🔓 Skip locking (session already paid)');
+    } 
   }
 
   console.log('💳 Payment status updated:', {
     isPaid: isPaid === true,
     method,
-    transactionId: additionalData.transactionId,
-    amount: additionalData.amount
+    sessionOK: window.sessionPaymentOK
+    //transactionId: additionalData.transactionId,
+    //amount: additionalData.amount
   });
 };
 </script>
