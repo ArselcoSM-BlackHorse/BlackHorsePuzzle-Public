@@ -1373,12 +1373,43 @@ window.lockPlayAndShowGameOver = function() {
       return;
     }
     
+    // Kumpulkan calon tombol interaktif (sesuaikan nama variabel yang ada di scene)
+  const candidates = [
+    scene.playBtn,
+    scene.playButton,
+    scene.sheriffPlayBtn,
+    scene.startBtn,
+    scene.roundPlayBtn
+  ];
+
+  candidates.forEach(btn => {
+    if (btn && typeof btn.disableInteractive === 'function') {
+      try {
+        // Pastikan masih punya scene valid
+        if (!btn.scene || !btn.scene.sys || btn.scene.sys.isDestroyed) {
+          console.warn('⚠️ Skip disableInteractive (scene invalid).');
+          return;
+        }
+        btn.disableInteractive();
+      } catch (e) {
+        console.warn('❌ disableInteractive failed:', e);
+      }
+    }
+  });
+
+  // Tampilkan panel Game Over aman
+  if (scene.showGameOverReturnMessage) {
+    try { scene.showGameOverReturnMessage(); } catch {}
+  }
+
     if (level01.lv01Puzzle10Btn && typeof level01.lv01Puzzle10Btn.disableInteractive === 'function') {
       level01.lv01Puzzle10Btn.disableInteractive();
       level01.lv01Puzzle10Btn.setAlpha(0.5);
     }
     if (window.lockPlayButton) window.lockPlayButton();
   });
+  // Tambah flag agar tidak dipanggil berkali-kali
+  scene.isGameOver = true;
 }
 
 // Tambahkan fungsi unlock global
@@ -1388,6 +1419,20 @@ window.unlockPlayAndHideGameOver = function() {
   //if (!level01) return;
   const level01 = window.game?.scene?.getScene("Level01Scene");
   if (!level01 || !level01.sys || level01.sys.isDestroyed) return;
+
+   if (!scene) return;
+  const candidates = [
+    scene.playBtn,
+    scene.playButton,
+    scene.sheriffPlayBtn,
+    scene.startBtn,
+    scene.roundPlayBtn
+  ];
+  candidates.forEach(btn => {
+    if (btn && typeof btn.setInteractive === 'function') {
+      try { btn.setInteractive({ useHandCursor: true }); } catch {}
+    }
+  });
 
   // Aktifkan tombol Play & 10 Puzzle
   //if (level01.playBtn) {
@@ -1437,6 +1482,7 @@ window.unlockPlayAndHideGameOver = function() {
 
   // (Opsional) Log
   console.log('✅ Game unlocked: Play & Puzzle enabled, Game Over & payment panel hidden');
+  scene.isGameOver = false;
 };
 
 
