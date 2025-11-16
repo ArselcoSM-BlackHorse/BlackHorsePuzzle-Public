@@ -1,7 +1,7 @@
 // Import cache assets
 importScripts('cache-assets.js');
 
-const CACHE_NAME = 'blackhorse-seri1-v1';
+const CACHE_NAME = 'blackhorse-seri1-v1-20251116-2';
 //const urlsToCache = [
 // 🎯 ASSETS UNTUK SERI 1 SAJA (10 PUZZLES)
 const CORE_ASSETS = [
@@ -9,7 +9,7 @@ const CORE_ASSETS = [
   './index.html',
   './phaser.min.js',
   './site.webmanifest',
-  // Favicon files yang sudah ada
+  // Favicon files that already exist
   './android-chrome-192x192.png',
   './android-chrome-512x512.png',
   './apple-touch-icon.png',

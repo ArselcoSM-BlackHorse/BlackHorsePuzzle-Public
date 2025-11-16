@@ -28,14 +28,7 @@
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-    if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(reg => console.log('Service Worker registered ✅', reg))
-        .catch(err => console.log('Service Worker failed ⛔', err));
-      });
-    }
-   </script>
+    </script>
   
     <style>
      html,body {
@@ -275,9 +268,6 @@ if ('serviceWorker' in navigator) {
 
 //======================================================================================
 const email = localStorage.getItem("email");
-//if (email) {
-//  syncProgressFromBackend(email);
-//}
 
 // Deklarasi variabel utama
 let userData = JSON.parse(localStorage.getItem(`gameData-${email}`)) || {};
@@ -671,9 +661,9 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
     <!-- === End form login === style="margin-left:10px;" dikeluarkan dari Resend Code === -->
 
      <!-- Load main.js -->
-    <script src="https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/SplashScene.js"></script>
-    <script src="https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js"></script>
-    <script src="https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level02Scene.js"></script>
+    <script src="https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/SplashScene.js?v=20251116-2"></script>
+    <script src="https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level01Scene.js?v=20251116-2"></script>
+    <script src="https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level02Scene.js?v=20251116-2"></script>
     <script src="./main.js"></script>
     
 
@@ -1901,45 +1891,6 @@ function stopPaymentMonitoring() {
   console.log('📊 level01Score updated for', email, newScore);
 }
          
-//window.lockPlayAndShowGameOver = function() {
-  //setTimeout(() => {
-    //const level01 = window.game?.scene?.getScene("Level01Scene");
-    //if (level01) {
-      
-      //if (level01.playBtn) {
-        //level01.playBtn.disableInteractive();
-        //level01.playBtn.setAlpha(0.5);
-        //console.log('INDEX: PlayBtn dinonaktifkan di sini', { isPaid, newUser });
-     // }
-      //if (level01.lv01Puzzle10Btn) {
-      //  level01.lv01Puzzle10Btn.disableInteractive();
-      //  level01.lv01Puzzle10Btn.setAlpha(0.5);
-     // }  
-    //}
-   // Tambahan: pastikan Play tetap terkunci
-   // if (window.lockPlayButton) window.lockPlayButton();
-  //});
-//}
-  
-//window.lockPlayAndShowGameOver = function() {
-  //setTimeout(() => {
-    //const level01 = window.game?.scene?.getScene("Level01Scene");
-    //if (!level01) {
-      //console.warn('Level01Scene not found!');
-      //return;
-    //}
-    //if (level01.playBtn && typeof level01.playBtn.disableInteractive === 'function') {
-      //level01.playBtn.disableInteractive();
-      //level01.playBtn.setAlpha(0.5);
-    //}
-    //if (level01.lv01Puzzle10Btn && typeof level01.lv01Puzzle10Btn.disableInteractive === 'function') {
-    //  level01.lv01Puzzle10Btn.disableInteractive();
-    //  level01.lv01Puzzle10Btn.setAlpha(0.5);
-    //}
-    //if (window.lockPlayButton) window.lockPlayButton();
-  //});
-//}
-
 /* ganti fungsi lama lockPlayAndShowGameOver */
 window.lockPlayAndShowGameOver = function(retry = 0) {
   // Hindari loop tak berujung
@@ -2318,10 +2269,6 @@ window.showDonation = function() {
     overlay.remove();
   };
 
-  // Tombol PayPal redirect ke PayPal.me
-  //document.getElementById('paypal-donate-btn').onclick = function() {
-    //window.open('https://paypal.me/arselco', '_blank');
-  //};
 
   // Pastikan id di HTML: <button id="paypal-donate-btn" ...>
 const paypalBtn = document.getElementById('paypal-donate-btn');
