@@ -2026,9 +2026,9 @@ window.lockPlayAndShowGameOver = function() {
             level01.musicNotes.forEach(note => note.setInteractive({ useHandCursor: true }));
           }
           if (level01.airBtn) level01.airBtn.setInteractive();
-          if (level01.grassContainer && level01.grassContainer.list[0]) {
-            level01.grassContainer.list[0].setInteractive();
-            level01.grassContainer.list[0].setAlpha(0.5);
+          if (level01.grassBtn && level01.grassBtn.active) {
+            level01.grassBtn.setInteractive();
+            level01.grassBtn.setAlpha(0.5);
           }
           if (level01.carrotBtn) level01.carrotBtn.setInteractive();
           if (level01.appleBtn) level01.appleBtn.setInteractive();
