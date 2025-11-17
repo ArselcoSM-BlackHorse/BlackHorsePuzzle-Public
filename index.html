@@ -679,6 +679,11 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
     <script src="https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level02Scene.js?v=20251116-2"></script>
     <script src="./main.js"></script>
     
+    document.addEventListener('webglcontextlost', function(e) {
+    e.preventDefault();
+    alert('Graphics context lost. Reloading game...');
+    window.location.reload();
+    }, false);
 
    <script>
       // Agar mouse wheel di atas canvas tetap scroll halaman, walau canvas diganti/direfresh Phaser
@@ -2065,6 +2070,14 @@ window.lockPlayAndShowGameOver = function(retry = 0) {
 
 document.addEventListener('visibilitychange', async () => {
   if (document.visibilityState === 'visible') {
+    // 1. Cek canvas hitam (WebGL context lost)
+    const canvas = document.querySelector('canvas');
+    if (canvas && (canvas.width === 0 || canvas.height === 0)) {
+      alert('Game graphics lost after idle. Reloading...');
+      window.location.reload();
+      return;
+    }
+    // 2. Sync payment status
     const email = localStorage.getItem('email');
     if (email) {
       const paymentData = await window.checkPaymentStatusFromBackend(email);
