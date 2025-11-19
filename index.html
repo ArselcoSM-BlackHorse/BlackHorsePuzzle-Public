@@ -564,14 +564,24 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
         z-index: 1;
         box-sizing: border-box;
       }
+      
       .banner-img {
-        width: 25vw;
-        min-width: 80px;
-        max-width: 180px;
+        width: 18vw;
+        min-width: 70px;
+        max-width: 120px;
         margin: 0 auto 18px auto;
         display: block;
         filter: drop-shadow(0 0 24px #00eaff80);
       }
+      /* Responsive: mobile */
+      @media (max-width: 900px) {
+      .banner-img {
+        width: 38vw;
+        min-width: 60px;
+        max-width: 110px;
+      }
+    }
+
       .logo-img {
         position: absolute;
         right: 0;
