@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+  
+<link rel="preload" href="https://fonts.googleapis.com/css?family=Segoe+UI:400,700&display=swap" as="style" onload="this.rel='stylesheet'">  
 
    <!-- ADD ini di <head> section index.html: -->
 <meta name="theme-color" content="#046064">
@@ -49,9 +51,6 @@
     <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png">
     <link rel="manifest" href="site.webmanifest">
     <link rel="shortcut icon" href="favicon.ico">
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script>
     </script>
   
     <style>
@@ -477,7 +476,7 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
   <div style="position:relative;display:flex;flex-direction:row;align-items:flex-start;justify-content:center;width:100vw;max-width:100vw;margin-top:48px;margin-bottom:0;gap:3vw;min-height:600px;">
         
         <!-- Kiri: Herd (lebih besar, lebih naik) -->
-  <img src="BlackHorseHerd.png" alt="Black Horse & Herd" class="responsive-img herd-img">
+  <img src="BlackHorseHerd.webp" alt="Black Horse & Herd" class="responsive-img herd-img">
        
   <!-- Tengah: Banner (lebih lebar dan panjang, font lebih besar) -->
         <div class="banner-container">
@@ -510,7 +509,7 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
          
        
         <!-- Kanan: Logo Black Horse (kanan atas, sejajar batas atas banner) -->
-  <img src="LogoBlackHorse.png" alt="Black Horse Logo" class="responsive-img logo-img">
+  <img src="LogoBlackHorse.webp" alt="Black Horse Logo" class="responsive-img logo-img">
       </div>
     </div>
 
@@ -2498,8 +2497,11 @@ console.log('✅ Enhanced notification system initialized');
 console.log('🔔 All user feedback messages ready!');
 
 </script>
-
 <!--message for maintenance time-->
 
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
+<script>
+</script>
 </body>
 </html>
