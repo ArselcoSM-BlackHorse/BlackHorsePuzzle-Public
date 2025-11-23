@@ -305,16 +305,7 @@
   }
 }
 
-/* Tambahkan di bawah style responsive */
-html, body {
-  overflow-x: hidden !important;
-  max-width: 100vw;
-}
 
-#landingOverlay {
-  max-width: 100vw;
-  overflow-x: hidden !important;
-}
 
 /* Untuk Absolute di Mobile */
 @media (max-width: 600px) {
@@ -1604,10 +1595,20 @@ window.addEventListener('DOMContentLoaded', async function() {
     }, 1000);
   }
 
+  setTimeout(() => {
+  const loader = document.getElementById('loader');
+  if (loader && loader.style.display !== 'none') {
+    loader.style.display = 'none';
+    alert('Game failed to load. Please reload or check your connection.');
+  }
+}, 10000); // 10 detik
 });
 
-// async function handleScoreStatus(inputEmail, scoreStatus) { DIHAPUS KARENA MEMANGGIL UPDATEGAMESCORE YG SUDAH DIHAPUS YG DIPAKAI UPDATEUSERPROGRESS
-
+// Menunggu game siap sebelum menyembunyikan loader
+waitForGameReady(() => {
+  const loader = document.getElementById('loader');
+  if (loader) loader.style.display = 'none';
+});
         
         
 if (window.Phaser && window.game && window.game.scene) {
@@ -1684,6 +1685,42 @@ if (window.Phaser && window.game && window.game.scene) {
     
     console.log('✅ Enhanced logout complete');
   };
+
+ //Atach helper to wait for game ready
+  function waitForGameReady(callback, maxAttempts = 20) {
+  let attempts = 0;
+  let completed = false;
+  const checkReady = () => {
+    if (completed) return;
+    attempts++;
+    if (
+      window.Phaser &&
+      window.game &&
+      window.game.scene &&
+      window.game.scene.getScene &&
+      typeof window.game.scene.getScene === 'function'
+    ) {
+      const level01 = window.game.scene.getScene("Level01Scene");
+      if (level01 && level01.scene && level01.scene.isActive && level01.scene.isActive()) {
+        completed = true;
+        callback();
+      } else if (attempts < maxAttempts) {
+        setTimeout(checkReady, 500);
+      } else {
+        completed = true;
+        callback();
+      }
+    } else if (attempts < maxAttempts) {
+      setTimeout(checkReady, 500);
+    } else {
+      completed = true;
+      callback();
+    }
+  };
+  checkReady();
+}
+
+
   
   // ✅ SETUP LOGOUT BUTTON:
   const logoutBtn = document.getElementById('logoutBtn');
