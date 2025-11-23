@@ -72,7 +72,7 @@
         margin: 0 auto;
       }
     
-     #loginBox {
+  #loginBox {
   position: absolute;
   top: 6%;
   left: 88%;
@@ -255,6 +255,65 @@
   background: linear-gradient(90deg, #0078ff 0%, #00c6ff 100%);
   box-shadow: 0 0 18px #00eaffcc;
 }
+
+/* Tambahkan di bagian <style> atau update yang sudah ada */
+
+/* Responsive untuk layar kecil (HP) */
+@media (max-width: 600px) {
+  .banner-container {
+    padding: 12px 2vw;
+    max-width: 98vw;
+    min-width: 0;
+    width: 98vw;
+    border-radius: 18px;
+  }
+  .banner-img {
+    width: 60vw;
+    min-width: 60px;
+    max-width: 110px;
+    margin-bottom: 12px;
+  }
+  .herd-img {
+    width: 38vw;
+    min-width: 40px;
+    max-width: 90px;
+    margin-left: 1vw;
+    border-radius: 10px;
+  }
+  .logo-img {
+    width: 32vw;
+    min-width: 40px;
+    max-width: 90px;
+    margin-right: 1vw;
+    border-radius: 10px;
+    top: 8px;
+    right: 8px;
+  }
+  #landingOverlay {
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding-bottom: 16px;
+  }
+  .banner-container h1 {
+    font-size: 1.5em;
+  }
+  #entranceGameBtn {
+    font-size: 1em;
+    padding: 12px 24px;
+    border-radius: 10px;
+  }
+}
+
+/* Untuk Absolute di Mobile */
+@media (max-width: 600px) {
+  .herd-img, .logo-img {
+    position: static;
+    display: block;
+    margin: 0 auto 8px auto;
+  }
+}
+
 </style>
 
 <script>
