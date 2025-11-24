@@ -573,8 +573,20 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
   <img src="LogoBlackHorse.webp" alt="Black Horse Logo" class="responsive-img logo-img" loading="lazy">
       </div>
     </div>
-
     
+<div id="pinterest-btn-container"></div>
+<button id="enterBtn">Entrance → Black Horse</button>
+</div>
+<script src="pinterest-integration.js"></script>
+<script>
+  addPinterestSaveButton({
+    url: 'https://arselco.com/',
+    media: 'https://arselco.com/LogoBlackHorse.webp',
+    description: 'Play the official Black Horse Puzzle Futuristic Game.',
+    containerId: 'pinterest-btn-container'
+  });
+</script> 
+
     <style>
       html, body {
         height: 100%;
