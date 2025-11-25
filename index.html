@@ -344,8 +344,13 @@
     margin: 0 auto 8px auto;
   }
 }
+@media (max-width: 900px) {
+  #maintenance-overlay { display: flex !important; z-index: 100000 !important; }
+  #landingOverlay { display: none !important; }
+}
 @media (min-width: 900px) {
   #maintenance-overlay { display: none !important; }
+  #landingOverlay { display: flex !important; }
 }
 </style>
 
@@ -567,7 +572,7 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
 
   <body>
   <!-- Maintenance overlay harus di atas semua konten -->
-  <div id="maintenance-overlay" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.95);z-index:99999;display:flex;justify-content:center;align-items:center;">
+  <div id="maintenance-overlay" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.95);z-index:100000;display:flex;justify-content:center;align-items:center;">
   <div style="background:rgba(30,34,44,0.98);border-radius:18px;box-shadow:0 0 32px #00eaff80;padding:32px 18px;max-width:90vw;width:90vw;text-align:center;color:#fff;font-size:1.15em;">
     <div style="font-size:1.25em;font-weight:bold;margin-bottom:12px;">⚠️ Attention!</div>
     We are optimizing the mobile display to ensure the best Black Horse Puzzle experience on all devices.<br>
