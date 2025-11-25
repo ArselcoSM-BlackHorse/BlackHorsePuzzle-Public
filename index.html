@@ -344,7 +344,9 @@
     margin: 0 auto 8px auto;
   }
 }
-
+@media (min-width: 900px) {
+  #maintenance-overlay { display: none !important; }
+}
 </style>
 
 <script>
@@ -564,6 +566,21 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
 
 
   <body>
+  <!-- Maintenance overlay harus di atas semua konten -->
+  <div id="maintenance-overlay" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.95);z-index:99999;display:flex;justify-content:center;align-items:center;">
+  <div style="background:rgba(30,34,44,0.98);border-radius:18px;box-shadow:0 0 32px #00eaff80;padding:32px 18px;max-width:90vw;width:90vw;text-align:center;color:#fff;font-size:1.15em;">
+    <div style="font-size:1.25em;font-weight:bold;margin-bottom:12px;">⚠️ Attention!</div>
+    We are optimizing the mobile display to ensure the best Black Horse Puzzle experience on all devices.<br>
+    The desktop site works normally, but mobile/tablet users please check back later.<br>
+    Thank you for your understanding!<br>
+    <hr style="border:none;border-top:1px solid #00eaff;margin:16px 0;">
+    <div style="font-size:1.15em;font-weight:bold;margin-bottom:12px;">Perhatian!</div>
+    Kami sedang melakukan optimasi tampilan seluler (mobile) untuk memastikan pengalaman bermain Black Horse Puzzle lebih sempurna di semua perangkat.<br>
+    Situs desktop berfungsi normal, tetapi pengguna HP/Tablet silakan kembali lagi nanti.<br>
+    Terima kasih atas pengertiannya.
+  </div>
+  </div>
+
     <!-- Overlay Landing Warning (muncul sekali per sesi) -->
   <div id="landingOverlay" style="position:absolute;z-index:99999;top:0;left:0;width:100vw;background:#034054;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;overflow-y:auto;min-height:100vh;">
   <div style="position:relative;display:flex;flex-direction:row;align-items:flex-start;justify-content:center;width:100vw;max-width:100vw;margin-top:48px;margin-bottom:0;gap:3vw;min-height:600px;">
@@ -2595,23 +2612,7 @@ console.log('🔔 All user feedback messages ready!');
 
 </script>
 <!--message for maintenance time-->
-<div id="maintenance-overlay" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.95);z-index:99999;display:flex;justify-content:center;align-items:center;">
-  <div style="background:rgba(30,34,44,0.98);border-radius:18px;box-shadow:0 0 32px #00eaff80;padding:32px 18px;max-width:90vw;width:90vw;text-align:center;color:#fff;font-size:1.15em;">
-    <div style="font-size:1.25em;font-weight:bold;margin-bottom:12px;">⚠️ Attention!</div>
-    We are optimizing the mobile display to ensure the best Black Horse Puzzle experience on all devices.<br>
-    The desktop site works normally, but mobile/tablet users please check back later.<br>
-    Thank you for your understanding!<br>
-    <hr style="border:none;border-top:1px solid #00eaff;margin:16px 0;">
-    <div style="font-size:1.15em;font-weight:bold;margin-bottom:12px;">Perhatian!</div>
-    Kami sedang melakukan optimasi tampilan seluler (mobile) untuk memastikan pengalaman bermain Black Horse Puzzle lebih sempurna di semua perangkat.<br>
-    Situs desktop berfungsi normal, tetapi pengguna HP/Tablet silakan kembali lagi nanti.<br>
-    Terima kasih atas pengertiannya.
-  </div>
-</div>
-<style>
-@media (min-width: 900px) {
-  #maintenance-overlay { display: none !important; }
-}
+
 </style>
 </body>
 </html>
