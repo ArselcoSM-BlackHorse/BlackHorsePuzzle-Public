@@ -566,8 +566,7 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
           <div style="margin-top:30px;font-size:1.15em;color:#b0e0ff;text-align:center;">© 2025 Black Horse Puzzle - Futuristic Game by Arselco. All rights reserved.</div>
         </div>
 
-          <!-- Text moved above Entrance button -->
-         
+          <!-- Text moved above Entrance button -->   
        
         <!-- Kanan: Logo Black Horse (kanan atas, sejajar batas atas banner) -->
   <img src="LogoBlackHorse.webp" alt="Black Horse Logo" class="responsive-img logo-img" loading="lazy">
@@ -2569,6 +2568,22 @@ console.log('🔔 All user feedback messages ready!');
 
 </script>
 <!--message for maintenance time-->
+<div id="maintenance-overlay" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.95);z-index:99999;display:flex;justify-content:center;align-items:center;color:#fff;font-size:1.3em;text-align:center;">
+  <div>
+    ⚠️ Attention! We are optimizing the mobile display to ensure the best Black Horse Puzzle experience on all devices.<br>
+    The desktop site works normally, but mobile/tablet users please check back later.<br>
+    Thank you for your understanding!<br><br>
+    <hr style="border: none; border-top: 1px solid #00eaff; margin: 16px 0;">
+    Perhatian! Kami sedang melakukan optimasi tampilan seluler (mobile) untuk memastikan pengalaman bermain Black Horse Puzzle lebih sempurna di semua perangkat.<br>
+    Situs desktop berfungsi normal, tetapi pengguna HP/Tablet silakan kembali lagi nanti.<br>
+    Terima kasih atas pengertiannya.
+  </div>
+</div>
+<style>
+@media (min-width: 900px) {
+  #maintenance-overlay { display: none !important; }
+}
 
+</style>
 </body>
 </html>
