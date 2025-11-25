@@ -71,6 +71,10 @@
          max-height: 100vh;
         margin: 0 auto;
       }
+
+      body {
+       overflow-x: hidden !important; /* Mencegah scrolling horizontal */
+      }
     
   #loginBox {
   position: absolute;
@@ -771,12 +775,7 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
     <script src="https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/Level02Scene.js?v=20251116-2"></script>
     <script src="./main.js"></script>
     
-    document.addEventListener('webglcontextlost', function(e) {
-    e.preventDefault();
-    alert('Graphics context lost. Reloading game...');
-    window.location.reload();
-    }, false);
-
+  
    <script>
       // Agar mouse wheel di atas canvas tetap scroll halaman, walau canvas diganti/direfresh Phaser
      //Fix Canvas function addScrollToCanvas() {
