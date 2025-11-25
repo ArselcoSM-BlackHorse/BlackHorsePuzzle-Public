@@ -284,6 +284,33 @@
     margin-left: 1vw;
     border-radius: 10px;
   }
+  /* Sembunyikan gambar herd dan banner di layar kecil */
+  @media (max-width: 600px) {
+  .herd-img, .banner-img {
+    display: none !important;
+  }
+  /* Loader image please wait */
+  #loader img {
+    display: none !important;
+  }
+}
+  /* Tampilkan logo di layar kecil */
+@media (max-width: 600px) {
+  .logo-img {
+    display: block !important;
+    position: static !important;
+    margin: 24px auto 16px auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: 0 !important;
+    width: 38vw !important;
+    min-width: 60px !important;
+    max-width: 110px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 0 18px #00eaff80;
+  }
+}
+
   .logo-img {
     width: 32vw;
     min-width: 40px;
