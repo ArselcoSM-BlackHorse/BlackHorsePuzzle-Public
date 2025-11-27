@@ -719,24 +719,6 @@ if (window.innerWidth > 1024) {
   }
 }
 
-  // Saat tombol Entrance diklik, landing overlay hilang, loginBox muncul
-  document.getElementById('entranceGameBtn').onclick = function() {
-    document.getElementById('landingOverlay').style.display = 'none';
-    document.getElementById('loginBox').style.display = 'block';
-    // Simpan di sessionStorage bahwa peringatan sudah ditampilkan
-    window.sessionStorage.setItem('bhpWarningShown', '1');
-    // Sembunyikan loader jika masih tampil
-    const loader = document.getElementById('loader');
-    if (loader) loader.style.display = 'none';
-    // Start SplashScene if Phaser game is ready
-    //waitForGameReady(function() {
-    //if (window.game && window.game.scene && window.game.scene.isActive) {
-      //if (!window.game.scene.isActive('SplashScene')) {
-        //window.game.scene.start('SplashScene');
-      //}
-    //}
-  //}, 20);// maxAttempts lebih banyak agar pasti siap
-  };
 </script> 
 
     <style>
@@ -1629,15 +1611,26 @@ function showLoginForm() {
   document.getElementById("loginBox").style.display = "block";
   document.getElementById("emailInput").style.display = "inline-block";
   document.getElementById("loginBtn").style.display = "inline-block";
-  //document.getElementById("verificationBox").style.display = "block";
-  //document.getElementById("verificationCodeInput").style.display = "inline-block";
-  //document.getElementById("resendVerificationBtn").style.display = "inline-block";
   document.getElementById("logoutBtn").style.display = "none";
 }
 
 //-------------------------------------------------------------------------------------------
 // ✅ ENHANCED DOMCONTENTLOADED WITH level01Score MANAGEMENT:
 window.addEventListener('DOMContentLoaded', async function() {
+  const entranceBtn = document.getElementById('entranceGameBtn');
+  if (entranceBtn) {
+    entranceBtn.onclick = function() {
+      console.log('✅ Tombol entrance diklik');
+      document.getElementById('landingOverlay').style.display = 'none';
+      document.getElementById('loginBox').style.display = 'block';
+      window.sessionStorage.setItem('bhpWarningShown', '1');
+      const loader = document.getElementById('loader');
+      if (loader) loader.style.display = 'none';
+    };
+  } else {
+    console.error('❌ Tombol entrance tidak ditemukan!');
+  }
+  
   const loginAgainBtn = document.getElementById("loginAgainBtn");
   if (loginAgainBtn) {
     loginAgainBtn.onclick = function() {
