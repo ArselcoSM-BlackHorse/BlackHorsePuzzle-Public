@@ -78,7 +78,7 @@
   /* Tampilkan maintenance-overlay di layar kecil, sembunyikan landingOverlay dan loginBox */
  @media (max-width: 1024px) {
   #maintenance-overlay { display: flex !important; z-index: 100000 !important; }
-  #landingOverlay { display: none !important; }
+  #landingOverlay { display: flex !important; }
   #loginBox { display: none !important; }
 }
 @media (min-width: 1025px) {
@@ -695,7 +695,7 @@ if (window.innerWidth > 1024) {
   // Saat tombol Entrance diklik, landing overlay hilang, loginBox muncul
   document.getElementById('entranceGameBtn').onclick = function() {
     document.getElementById('landingOverlay').style.display = 'none';
-    document.getElementById('loginBox').style.display = 'block';
+    document.getElementById('loginBox').style.setProperty("display", "none", "important");
     window.sessionStorage.setItem('bhpWarningShown', '1');
     // Sembunyikan loader jika masih tampil
     const loader = document.getElementById('loader');
