@@ -154,6 +154,33 @@
     margin-top: 8px !important;
   }
 }
+@media (max-width: 900px) {
+  #verificationBox {
+    position: fixed !important;
+    top: 60px !important;
+    left: 50% !important;
+    transform: translate(-50%, 0) !important;
+    min-width: 70vw !important;
+    max-width: 90vw !important;
+    width: 80vw !important;
+    padding: 12px 2vw !important;
+    border-radius: 12px !important;
+    font-size: 1em !important;
+    z-index: 10000 !important;
+  }
+  #verificationBox input[type="text"], #verificationBox button {
+    width: 60vw !important;
+    min-width: 100px !important;
+    font-size: 1em !important;
+    margin-top: 8px !important;
+  }
+  .login-row {
+    flex-direction: column !important;
+    gap: 10px !important;
+    align-items: stretch !important;
+  }
+}
+
    .responsive-img {
     max-width: 100vw !important;
     height: auto !important;
@@ -702,13 +729,13 @@ if (window.innerWidth > 1024) {
     const loader = document.getElementById('loader');
     if (loader) loader.style.display = 'none';
     // Start SplashScene if Phaser game is ready
-    waitForGameReady(function() {
-    if (window.game && window.game.scene && window.game.scene.isActive) {
-      if (!window.game.scene.isActive('SplashScene')) {
-        window.game.scene.start('SplashScene');
-      }
-    }
-  }, 20);// maxAttempts lebih banyak agar pasti siap
+    //waitForGameReady(function() {
+    //if (window.game && window.game.scene && window.game.scene.isActive) {
+      //if (!window.game.scene.isActive('SplashScene')) {
+        //window.game.scene.start('SplashScene');
+      //}
+    //}
+  //}, 20);// maxAttempts lebih banyak agar pasti siap
   };
 </script> 
 
