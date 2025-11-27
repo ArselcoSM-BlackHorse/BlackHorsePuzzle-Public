@@ -697,6 +697,9 @@ if (window.innerWidth > 1024) {
     document.getElementById('landingOverlay').style.display = 'none';
     document.getElementById('loginBox').style.display = 'block';
     window.sessionStorage.setItem('bhpWarningShown', '1');
+    // Sembunyikan loader jika masih tampil
+    const loader = document.getElementById('loader');
+    if (loader) loader.style.display = 'none';
     // Start SplashScene if Phaser game is ready
     if (window.game && window.game.scene && window.game.scene.isActive) {
       if (!window.game.scene.isActive('SplashScene')) {
