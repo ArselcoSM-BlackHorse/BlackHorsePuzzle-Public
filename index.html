@@ -75,17 +75,19 @@
          max-height: 100vh;
         margin: 0 auto;
       }
-  /* Tampilkan maintenance-overlay di layar kecil, sembunyikan landingOverlay dan loginBox */
- /*@media (max-width: 1024px) {
+
+/* Tampilkan maintenance-overlay di layar kecil, sembunyikan landingOverlay dan loginBox */
+/* @media (max-width: 1024px) {
   #maintenance-overlay { display: none !important; }
   #landingOverlay { display: flex !important; }
   #loginBox { display: block !important; }
-}
-@media (min-width: 1025px) {
+ }
+ @media (min-width: 1025px) {
   #maintenance-overlay { display: none !important; }
   #landingOverlay { display: flex !important; }
   /*#loginBox { display: block !important; }*/
-/*}*/ 
+/* } */ 
+/* Jika ada maintenance diaktifkan, gunakan kode di atas dan sesuaikan ukuran layar sesuai kebutuhan */
 
   /* model adjustable untuk potrait landscape mode di hp/tablet */ 
   /* Sesuaikan landingOverlay untuk layar kecil */
@@ -133,26 +135,43 @@
   @media (max-width: 900px) {
   #loginBox {
     position: fixed !important;
-    top: 18px !important;
+    top: 24px !important;
     left: 18px !important;
-    right: auto !important;
+    right: 18px !important;
     transform: none !important;
-    min-width: 70vw !important;
-    max-width: 90vw !important;
-    width: 80vw !important;
-    margin: 0 !important;
+    min-width: 0 !important;
+    max-width: 98vw !important;
+    width: auto !important;
+    margin: 0 auto !important;
     border-radius: 12px !important;
     box-sizing: border-box !important;
-    padding: 12px 2vw !important;
+    padding: 10px 8px !important;
     z-index: 10000 !important;
     background: rgba(30, 34, 44, 0.96) !important;
     /* display: block !important; */
   }
-  #loginBox input[type="text"], #loginBox button {
-    width: 60vw !important;
-    min-width: 100px !important;
+  .login-row {
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+    margin: 0 !important;
+  }
+  #loginBox input[type="text"] {
+    width: 56vw !important;
+    min-width: 80px !important;
+    max-width: 180px !important;
     font-size: 1em !important;
-    margin-top: 8px !important;
+    margin: 0 !important;
+    padding: 8px 8px !important;
+  }
+  #loginBox button {
+    width: auto !important;
+    min-width: 70px !important;
+    max-width: 110px !important;
+    font-size: 1em !important;
+    margin: 0 !important;
+    padding: 8px 16px !important;
   }
 }
 @media (max-width: 900px) {
@@ -643,7 +662,7 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
     Silakan kembali lagi nanti.<br>
     Terima kasih atas pengertiannya.
   </div>
-  </div> 
+  </div> -->
 
     <!-- Overlay Landing Warning (muncul sekali per sesi) -->
   <div id="landingOverlay" style="position:absolute;z-index:99999;top:0;left:0;width:100vw;background:#034054;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;overflow-y:auto;min-height:100vh;">
@@ -706,10 +725,6 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
     containerId: 'pinterest-btn-container'
   });
 
-// Sembunyikan loginBox saat landing overlay tampil
-  //if (document.getElementById('landingOverlay').style.display !== 'none') {
-    //document.getElementById('loginBox').style.display = 'none';
-  //}
 // Sembunyikan loginBox saat landing overlay tampil (hanya desktop)
 if (window.innerWidth > 1024) {
   const landingOverlay = document.getElementById('landingOverlay');
