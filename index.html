@@ -333,17 +333,17 @@
   @media (max-width: 900px) {
   #loginBox {
     position: absolute !important;
-    top: 2px !important;
+    top: 1px !important;
     left: 50% !important;
     transform: translate(-50%, 0) !important;
     width: 220px !important;         /* Lebih pendek */
     max-width: 60vw !important;
     min-width: 150px !important;
     margin: 0 auto !important;
-    border-radius: 5px !important;
+    border-radius: 2px !important;
     border: 1px solid #00eaff !important; /* Batas garis kelihatan */
     box-sizing: border-box !important;
-    padding: 5px 3px !important;
+    padding: 2px 1px !important;
     z-index: 10000 !important;
     background: rgba(30, 34, 44, 0.96) !important;
     display: block !important;
@@ -430,7 +430,7 @@
   .logo-img {
     position: static !important;
     display: block !important;
-    margin: 0 auto 12px auto !important;
+    margin: 3px auto 12px auto !important;
     left: auto !important;
     right: auto !important;
     top: auto !important;
@@ -1323,6 +1323,9 @@ try {
     await window.resendVerificationEmail(inputEmail);
     console.log('Step 4: Showing verification box...');
     // Tampilkan verificationBox, sembunyikan login dan logoutBtn
+    if (window.innerWidth <= 900) {
+    document.getElementById("loginBox").style.display = "none";
+    }
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("logoutBtn").style.display = "none";
     // Tampilkan verificationBox
