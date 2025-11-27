@@ -330,24 +330,43 @@
   }
  
   /* Style Login Box untuk layar kecil */
-  /*@media (max-width: 900px) {
+ 
+ /* Default untuk HP lain (Vivo, Xiaomi, dst) */
+@media (max-width: 900px) {
   #loginBox {
-    background: none !important;
-    border: none !important;
+    position: fixed !important;
+    top: 24px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 160px !important;
+    max-width: 80vw !important;
+    min-width: 120px !important;
+    margin: 0 auto !important;
+    background: rgba(30, 34, 44, 0.96) !important;
+    border: 2px solid #00eaff !important;
     box-shadow: none !important;
-    padding: 0 !important;
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: 100vw !important;
-    margin: 18px auto 0 auto !important;  
-    position: static !important;
+    padding: 8px 4px !important;
     display: block !important;
     text-align: center !important;
-  /*}*/
-  @media (max-width: 900px) {
-  #loginBox {
-    position: absolute !important;
-    top: 1px !important;                /* Naik ke atas layar */
+    z-index: 10000 !important;
+  }
+  #loginBox input[type="text"] {
+    width: 120px !important;
+    min-width: 80px !important;
+    max-width: 140px !important;
+  }
+  #loginBox button {
+    width: 40px !important;
+    min-width: 36px !important;
+    max-width: 60px !important;
+  }
+}
+
+/* Khusus Samsung: loginBox tanpa kotak utama, posisi paling atas */
+@media (max-width: 900px) {
+  body.samsung #loginBox {
+    position: fixed !important;
+    top: 1px !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
     width: auto !important;
@@ -362,38 +381,17 @@
     text-align: center !important;
     z-index: 10000 !important;
   }
-}
-
-  @media (max-width: 900px) {
-  .login-row {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 6px !important;
-    margin: 0 !important;
+  body.samsung #loginBox input[type="text"] {
+    width: 140px !important;
+    min-width: 80px !important;
+    max-width: 180px !important;
   }
-  #loginBox input[type="text"] {
-    width: 230px !important;                /* Lebar input lebih kecil */
-    min-width: 20px !important;
-    max-width: 140px !important;
-    font-size: 1em !important;
-    margin: 0 !important;
-    padding: 7px 6px !important;
-    box-sizing: border-box !important;
-    vertical-align: middle !important;
+  body.samsung #loginBox button {
+    width: 70px !important;
+    min-width: 60px !important;
+    max-width: 90px !important;
   }
-  #loginBox button {
-    width: 60px !important;                /* Lebar tombol login lebih kecil */
-    min-width: 20px !important;
-    max-width: 80px !important;
-    font-size: 1em !important;
-    margin: 0 !important;
-    padding: 7px 0 !important;
-    box-sizing: border-box !important;
-    vertical-align: middle !important;
-  }
- } 
+ }
 }
  
 /* Style Verification Box untuk layar kecil */
