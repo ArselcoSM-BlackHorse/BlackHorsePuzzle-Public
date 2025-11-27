@@ -123,14 +123,15 @@
     border-radius: 12px !important;
     box-shadow: 0 0 18px #00eaff80 !important;
   }
+
   /* Sesuaikan landingOverlay untuk layar kecil */
   @media (max-width: 600px) {
   .banner-container {
-    padding: 12px 2vw !important;
+    padding: 10px 2vw !important;
     max-width: 96vw !important;
     min-width: 0 !important;
     width: 96vw !important;
-    border-radius: 18px !important;
+    border-radius: 16px !important;
     box-sizing: border-box !important;
     margin: 0 auto !important;
     display: flex !important;
@@ -140,29 +141,29 @@
   }
   .logo-img {
     position: static !important;
-    width: 22vw !important;
-    min-width: 48px !important;
-    max-width: 80px !important;
-    margin: 0 auto 8px auto !important;
+    width: 18vw !important;
+    min-width: 40px !important;
+    max-width: 60px !important;
+    margin: 0 auto 6px auto !important;
     display: block !important;
     top: auto !important;
     right: auto !important;
   }
   #entranceGameBtn {
-    font-size: 1.05em !important;
-    padding: 12px 0 !important;
-    border-radius: 12px !important;
-    width: 90vw !important;
-    max-width: 90vw !important;
-    margin: 8px auto 0 auto !important;
+    font-size: 0.95em !important;
+    padding: 10px 0 !important;
+    border-radius: 10px !important;
+    width: 88vw !important;
+    max-width: 88vw !important;
+    margin: 6px auto 0 auto !important;
     box-sizing: border-box !important;
     text-align: center !important;
     display: block !important;
   }
   .banner-container h1 {
-    font-size: 1.35em !important;
-    margin-bottom: 0.25em !important;
-    margin-top: 0.15em !important;
+    font-size: 1.1em !important;
+    margin-bottom: 0.18em !important;
+    margin-top: 0.12em !important;
   }
   .herd-img, .banner-img {
     display: none !important;
@@ -209,8 +210,16 @@
     margin: 12px auto 8px auto !important;
   }
 }
-
- } 
+ /* Sembunyikan loginBox dan herd-img di landscape mode pada layar sedang */
+  @media (max-width: 900px) and (orientation: landscape) {
+  #loginBox {
+    display: none !important;
+  }
+  .herd-img {
+    display: none !important;
+  }
+}
+} 
 
   #loginBox {
   position: absolute;
