@@ -84,7 +84,7 @@
 @media (min-width: 1025px) {
   #maintenance-overlay { display: none !important; }
   #landingOverlay { display: flex !important; }
-  #loginBox { display: block !important; }
+  /*#loginBox { display: block !important; }*/
 }    
   /* model adjustable untuk potrait landscape mode di hp/tablet */ 
   /* Sesuaikan landingOverlay untuk layar kecil */
@@ -108,7 +108,7 @@
     min-width: 40px !important;
     max-width: 60px !important;
     margin: 0 auto 6px auto !important;
-    display: block !important;
+    /* display: block !important; */
     top: auto !important;
     right: auto !important;
   }
@@ -121,7 +121,7 @@
     margin: 6px auto 0 auto !important;
     box-sizing: border-box !important;
     text-align: center !important;
-    display: block !important;
+    /* display: block !important; */
   }
   .banner-container h1 {
     font-size: 1.2em !important;
@@ -145,7 +145,7 @@
     padding: 12px 2vw !important;
     z-index: 10000 !important;
     background: rgba(30, 34, 44, 0.96) !important;
-    display: block !important;
+    /* display: block !important; */
   }
   #loginBox input[type="text"], #loginBox button {
     width: 60vw !important;
@@ -157,7 +157,7 @@
    .responsive-img {
     max-width: 100vw !important;
     height: auto !important;
-    display: block !important;
+   /* display: block !important; */
   }
 } /* Akhir media query layar kecil */
 
@@ -849,7 +849,7 @@ if (window.innerWidth > 1024) {
   
     <!-- 🐎 Login Box -->
      <!-- Login Box: hanya email dan tombol login -->
-<div id="loginBox" style="display:block;">
+<div id="loginBox" style="display:none;">
   <div class="login-row">
     <input type="text" id="emailInput" placeholder="Email" autocomplete="off" />
     <button id="loginBtn">Login</button>
