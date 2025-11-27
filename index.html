@@ -695,11 +695,12 @@ if (window.innerWidth > 1024) {
   // Saat tombol Entrance diklik, landing overlay hilang, loginBox muncul
   document.getElementById('entranceGameBtn').onclick = function() {
     document.getElementById('landingOverlay').style.display = 'none';
-    document.getElementById('loginBox').style.setProperty("display", "none", "important");
+    document.getElementById('loginBox').style.display = 'block';
+    // Simpan di sessionStorage bahwa peringatan sudah ditampilkan
     window.sessionStorage.setItem('bhpWarningShown', '1');
     // Sembunyikan loader jika masih tampil
-    const loader = document.getElementById('loader');
-    if (loader) loader.style.display = 'none';
+    //const loader = document.getElementById('loader');
+    //if (loader) loader.style.display = 'none';
     // Start SplashScene if Phaser game is ready
     waitForGameReady(function() {
     if (window.game && window.game.scene && window.game.scene.isActive) {
