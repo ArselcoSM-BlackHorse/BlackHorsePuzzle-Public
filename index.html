@@ -75,7 +75,17 @@
          max-height: 100vh;
         margin: 0 auto;
       }
- 
+  /* Tampilkan maintenance-overlay di layar kecil, sembunyikan landingOverlay dan loginBox */
+ @media (max-width: 1024px) {
+  #maintenance-overlay { display: flex !important; z-index: 100000 !important; }
+  #landingOverlay { display: none !important; }
+  #loginBox { display: none !important; }
+}
+@media (min-width: 1025px) {
+  #maintenance-overlay { display: none !important; }
+  #landingOverlay { display: flex !important; }
+  #loginBox { display: block !important; }
+}    
   /* model adjustable untuk potrait landscape mode di hp/tablet */ 
   /* Sesuaikan landingOverlay untuk layar kecil */
   @media (max-width: 900px) {
@@ -366,17 +376,7 @@
     margin-top: 8px !important;
   }
  }
-/* Tampilkan maintenance-overlay di layar kecil, sembunyikan landingOverlay dan loginBox */
- @media (max-width: 1024px) {
-  #maintenance-overlay { display: flex !important; z-index: 100000 !important; }
-  #landingOverlay { display: none !important; }
-  #loginBox { display: none !important; }
-}
-@media (min-width: 1025px) {
-  #maintenance-overlay { display: none !important; }
-  #landingOverlay { display: flex !important; }
-  #loginBox { display: block !important; }
-}
+
 }
 </style>
 
