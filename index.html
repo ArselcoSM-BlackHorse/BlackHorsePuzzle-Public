@@ -77,14 +77,14 @@
       }
   /* Tampilkan maintenance-overlay di layar kecil, sembunyikan landingOverlay dan loginBox */
  @media (max-width: 1024px) {
-  #maintenance-overlay { display: flex !important; z-index: 100000 !important; }
-  #landingOverlay { display: none !important; }
-  #loginBox { display: none !important; }
+  #maintenance-overlay { display: none !important; }
+  #landingOverlay { display: flex !important; }
+  #loginBox { display: block !important; }
 }
 @media (min-width: 1025px) {
   #maintenance-overlay { display: none !important; }
   #landingOverlay { display: flex !important; }
-  #loginBox { display: block !important; }
+  /*#loginBox { display: block !important; }*/
 }    
   /* model adjustable untuk potrait landscape mode di hp/tablet */ 
   /* Sesuaikan landingOverlay untuk layar kecil */
@@ -108,7 +108,7 @@
     min-width: 40px !important;
     max-width: 60px !important;
     margin: 0 auto 6px auto !important;
-    display: block !important;
+    /* display: block !important; */
     top: auto !important;
     right: auto !important;
   }
@@ -121,7 +121,7 @@
     margin: 6px auto 0 auto !important;
     box-sizing: border-box !important;
     text-align: center !important;
-    display: block !important;
+    /* display: block !important; */
   }
   .banner-container h1 {
     font-size: 1.2em !important;
@@ -129,29 +129,62 @@
     margin-top: 0.12em !important;
   }
  
+  @media (max-width: 900px) {
   #loginBox {
-    position: static !important;
-    min-width: 90vw !important;
-    max-width: 98vw !important;
-    width: 98vw !important;
-    margin: 18px auto 12px auto !important;
+    position: fixed !important;
+    top: 18px !important;
+    left: 18px !important;
+    right: auto !important;
+    transform: none !important;
+    min-width: 70vw !important;
+    max-width: 90vw !important;
+    width: 80vw !important;
+    margin: 0 !important;
     border-radius: 12px !important;
     box-sizing: border-box !important;
     padding: 12px 2vw !important;
-    z-index: 1000 !important;
+    z-index: 10000 !important;
     background: rgba(30, 34, 44, 0.96) !important;
+    /* display: block !important; */
   }
   #loginBox input[type="text"], #loginBox button {
-    width: 80vw !important;
-    min-width: 120px !important;
+    width: 60vw !important;
+    min-width: 100px !important;
     font-size: 1em !important;
     margin-top: 8px !important;
   }
- 
-  .responsive-img {
+}
+@media (max-width: 900px) {
+  #verificationBox {
+    position: fixed !important;
+    top: 60px !important;
+    left: 50% !important;
+    transform: translate(-50%, 0) !important;
+    min-width: 70vw !important;
+    max-width: 90vw !important;
+    width: 80vw !important;
+    padding: 12px 2vw !important;
+    border-radius: 12px !important;
+    font-size: 1em !important;
+    z-index: 10000 !important;
+  }
+  #verificationBox input[type="text"], #verificationBox button {
+    width: 60vw !important;
+    min-width: 100px !important;
+    font-size: 1em !important;
+    margin-top: 8px !important;
+  }
+  .login-row {
+    flex-direction: column !important;
+    gap: 10px !important;
+    align-items: stretch !important;
+  }
+}
+
+   .responsive-img {
     max-width: 100vw !important;
     height: auto !important;
-    display: block !important;
+   /* display: block !important; */
   }
 } /* Akhir media query layar kecil */
 
@@ -367,7 +400,7 @@
     padding: 12px 2vw !important;
     z-index: 10000 !important;
     background: rgba(30, 34, 44, 0.96) !important;
-    display: block !important;
+    /* display: block !important; */
   }
   #loginBox input[type="text"], #loginBox button {
     width: 60vw !important;
@@ -597,8 +630,8 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
 
 
   <body>
-  <!-- Maintenance overlay harus di atas semua konten -->
-  <div id="maintenance-overlay" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.95);z-index:100000;display:flex;justify-content:center;align-items:center;">
+  <!-- MAINTENANCE OVERLAY -->
+  <!-- <div id="maintenance-overlay" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.95);z-index:100000;display:flex;justify-content:center;align-items:center;">
   <div style="background:rgba(30,34,44,0.98);border-radius:18px;box-shadow:0 0 32px #00eaff80;padding:32px 18px;max-width:90vw;width:90vw;text-align:center;color:#fff;font-size:1.15em;">
     <div style="font-size:1.25em;font-weight:bold;margin-bottom:12px;">⚠️ Attention!</div>
     We are optimizing the mobile display to ensure the best Black Horse Puzzle experience on all devices.<br>
@@ -610,7 +643,7 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
     Situs desktop berfungsi normal, tetapi pengguna HP/Tablet silakan kembali lagi nanti.<br>
     Terima kasih atas pengertiannya.
   </div>
-  </div>
+  </div> -->
 
     <!-- Overlay Landing Warning (muncul sekali per sesi) -->
   <div id="landingOverlay" style="position:absolute;z-index:99999;top:0;left:0;width:100vw;background:#034054;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;overflow-y:auto;min-height:100vh;">
@@ -673,22 +706,19 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
   });
 
 // Sembunyikan loginBox saat landing overlay tampil
-  if (document.getElementById('landingOverlay').style.display !== 'none') {
-    document.getElementById('loginBox').style.display = 'none';
+  //if (document.getElementById('landingOverlay').style.display !== 'none') {
+    //document.getElementById('loginBox').style.display = 'none';
+  //}
+// Sembunyikan loginBox saat landing overlay tampil (hanya desktop)
+if (window.innerWidth > 1024) {
+  const landingOverlay = document.getElementById('landingOverlay');
+  const loginBox = document.getElementById('loginBox');
+  if (landingOverlay && loginBox && landingOverlay.style.display !== 'none') {
+    loginBox.style.display = "none";
+    loginBox.style.setProperty("display", "none", "important");
   }
+}
 
-  // Saat tombol Entrance diklik, landing overlay hilang, loginBox muncul
-  document.getElementById('entranceGameBtn').onclick = function() {
-    document.getElementById('landingOverlay').style.display = 'none';
-    document.getElementById('loginBox').style.display = 'block';
-    window.sessionStorage.setItem('bhpWarningShown', '1');
-    // Start SplashScene if Phaser game is ready
-    if (window.game && window.game.scene && window.game.scene.isActive) {
-      if (!window.game.scene.isActive('SplashScene')) {
-        window.game.scene.start('SplashScene');
-      }
-    }
-  };
 </script> 
 
     <style>
@@ -784,24 +814,6 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
       }
     </style>
    
-   <script>
-      // Overlay hanya muncul sekali per sesi browser
-      if (window.sessionStorage.getItem('bhpWarningShown')) {
-        document.getElementById('landingOverlay').style.display = 'none';
-      }
-      document.getElementById('entranceGameBtn').onclick = function() {
-        document.getElementById('landingOverlay').style.display = 'none';
-        window.sessionStorage.setItem('bhpWarningShown', '1');
-        // Start SplashScene if Phaser game is ready
-        if (window.game && window.game.scene && window.game.scene.isActive) {
-          // If SplashScene is not already active, start it
-          if (!window.game.scene.isActive('SplashScene')) {
-            window.game.scene.start('SplashScene');
-          }
-        }
-      };
-    </script>
-    <!-- Logo Section (add here if not present) -->
   <!-- Logo section image removed as requested -->
     <!-- Game Container -->
   <div id="game-container"></div>
@@ -847,7 +859,7 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
   
     <!-- 🐎 Login Box -->
      <!-- Login Box: hanya email dan tombol login -->
-<div id="loginBox" style="display:block;">
+<div id="loginBox" style="display:none;">
   <div class="login-row">
     <input type="text" id="emailInput" placeholder="Email" autocomplete="off" />
     <button id="loginBtn">Login</button>
@@ -1599,15 +1611,26 @@ function showLoginForm() {
   document.getElementById("loginBox").style.display = "block";
   document.getElementById("emailInput").style.display = "inline-block";
   document.getElementById("loginBtn").style.display = "inline-block";
-  //document.getElementById("verificationBox").style.display = "block";
-  //document.getElementById("verificationCodeInput").style.display = "inline-block";
-  //document.getElementById("resendVerificationBtn").style.display = "inline-block";
   document.getElementById("logoutBtn").style.display = "none";
 }
 
 //-------------------------------------------------------------------------------------------
 // ✅ ENHANCED DOMCONTENTLOADED WITH level01Score MANAGEMENT:
 window.addEventListener('DOMContentLoaded', async function() {
+  const entranceBtn = document.getElementById('entranceGameBtn');
+  if (entranceBtn) {
+    entranceBtn.onclick = function() {
+      console.log('✅ Tombol entrance diklik');
+      document.getElementById('landingOverlay').style.display = 'none';
+      document.getElementById('loginBox').style.display = 'block';
+      window.sessionStorage.setItem('bhpWarningShown', '1');
+      const loader = document.getElementById('loader');
+      if (loader) loader.style.display = 'none';
+    };
+  } else {
+    console.error('❌ Tombol entrance tidak ditemukan!');
+  }
+  
   const loginAgainBtn = document.getElementById("loginAgainBtn");
   if (loginAgainBtn) {
     loginAgainBtn.onclick = function() {
