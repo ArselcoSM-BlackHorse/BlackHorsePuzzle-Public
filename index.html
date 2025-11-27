@@ -293,15 +293,25 @@
     justify-content: flex-start !important;
   }
   .logo-img {
+    display: block !important;
+    margin: 0 auto 18px auto !important;
     position: static !important;
-    width: 18vw !important;
-    min-width: 40px !important;
-    max-width: 60px !important;
-    margin: 0 auto 6px auto !important;
+    width: 80vw !important;
+    min-width: 48px !important;
+    max-width: 120px !important;
+    margin: 0 auto 18px auto !important;
     /* display: block !important; */
     top: auto !important;
     right: auto !important;
+   @media (max-width: 900px) {
+  .logo-img {
+    margin: 0 auto 12px auto !important;
+    width: 22vw !important;
+    min-width: 48px !important;
+    max-width: 80px !important;
   }
+ }
+}
   #entranceGameBtn {
     font-size: 0.95em !important;
     padding: 10px 0 !important;
@@ -319,16 +329,16 @@
     margin-top: 0.12em !important;
   }
  
-@media (max-width: 900px) {
+/*@media (max-width: 900px) {
   #loginBox {
-    position: fixed !important;
-    top: 5px !important;
+    position: absolute !important;
+    top: 24px !important;
     left: 50% !important;
     right: auto !important;
     transform: translate(-50%, 0) !important;
     width: 95vw !important;
-    max-width: 320px !important;
-    min-width: 180px !important;
+    max-width: 340px !important;
+    min-width: 220px !important;
     margin: 0 auto !important;
     border-radius: 12px !important;
     box-sizing: border-box !important;
@@ -338,6 +348,10 @@
     display: block !important;
     text-align: center !important;
   }
+  body, #landingOverlay {
+    overflow-y: auto !important;
+    min-height: 100vh !important;
+  /*} */
   .login-row {
     display: flex !important;
     flex-direction: row !important;
