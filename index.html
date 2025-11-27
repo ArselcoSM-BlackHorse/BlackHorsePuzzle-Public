@@ -330,7 +330,7 @@
   }
  
   /* Style Login Box untuk layar kecil */
-  @media (max-width: 900px) {
+  /*@media (max-width: 900px) {
   #loginBox {
     background: none !important;
     border: none !important;
@@ -339,11 +339,32 @@
     width: auto !important;
     min-width: 0 !important;
     max-width: 100vw !important;
-    margin: 18px auto 0 auto !important;   /* Naik ke atas dan center */
+    margin: 18px auto 0 auto !important;  
     position: static !important;
     display: block !important;
     text-align: center !important;
+  /*}*/
+  @media (max-width: 900px) {
+  #loginBox {
+    position: absolute !important;
+    top: 4px !important;                /* Naik ke atas layar */
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 100vw !important;
+    margin: 0 auto !important;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    display: block !important;
+    text-align: center !important;
+    z-index: 10000 !important;
   }
+}
+
+  @media (max-width: 900px) {
   .login-row {
     display: flex !important;
     flex-direction: row !important;
