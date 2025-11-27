@@ -687,7 +687,7 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
           <div style="margin-top:30px;font-size:1.15em;color:#b0e0ff;text-align:center;">© 2025 Black Horse Puzzle - Futuristic Game by Arselco. All rights reserved.</div>
         </div>
 
-        <button id="testEnterBtn" style="margin:20px auto 24px auto;display:block;background:#ff9800;color:#fff;border:none;border-radius:12px;padding:12px 32px;font-size:1.2em;font-weight:700;cursor:pointer;box-shadow:0 0 12px #ff980080;">Test Enter Button</button>
+        <!-- <button id="testEnterBtn" style="margin:20px auto 24px auto;display:block;background:#ff9800;color:#fff;border:none;border-radius:12px;padding:12px 32px;font-size:1.2em;font-weight:700;cursor:pointer;box-shadow:0 0 12px #ff980080;">Test Enter Button</button> -->
           
         <!-- Text moved above Entrance button -->   
        
@@ -1619,9 +1619,9 @@ function showLoginForm() {
 //-------------------------------------------------------------------------------------------
 // ✅ ENHANCED DOMCONTENTLOADED WITH level01Score MANAGEMENT:
 window.addEventListener('DOMContentLoaded', async function() {
-  const entranceBtn = document.getElementById('entranceGameBtn');
-  if (entranceBtn) {
-    entranceBtn.onclick = function() {
+  const entranceGameBtn = document.getElementById('entranceGameBtn');
+  if (entranceGameBtn) {
+    entranceGameBtn.onclick = function() {
       console.log('✅ Tombol entrance diklik');
       document.getElementById('landingOverlay').style.display = 'none';
       document.getElementById('loginBox').style.display = 'block';
@@ -1632,14 +1632,14 @@ window.addEventListener('DOMContentLoaded', async function() {
   } else {
     console.error('❌ Tombol entrance tidak ditemukan!');
   }
-  const testBtn = document.getElementById('testEnterBtn');
-  if (testBtn) {
-    testBtn.onclick = function() {
-      alert('✅ Test Enter Button berhasil diklik!');
+  //const testBtn = document.getElementById('testEnterBtn');
+  //if (testBtn) {
+    //testBtn.onclick = function() {
+      //alert('✅ Test Enter Button berhasil diklik!');
       // Untuk test, bisa juga sembunyikan landing overlay
-      document.getElementById('landingOverlay').style.display = 'none';
-    };
-  }
+      //document.getElementById('landingOverlay').style.display = 'none';
+    //};
+  //}
   const loginAgainBtn = document.getElementById("loginAgainBtn");
   if (loginAgainBtn) {
     loginAgainBtn.onclick = function() {
