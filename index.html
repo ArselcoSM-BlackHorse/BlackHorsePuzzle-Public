@@ -123,6 +123,93 @@
     border-radius: 12px !important;
     box-shadow: 0 0 18px #00eaff80 !important;
   }
+  /* Sesuaikan landingOverlay untuk layar kecil */
+  @media (max-width: 600px) {
+  .banner-container {
+    padding: 12px 2vw !important;
+    max-width: 96vw !important;
+    min-width: 0 !important;
+    width: 96vw !important;
+    border-radius: 18px !important;
+    box-sizing: border-box !important;
+    margin: 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+  }
+  .logo-img {
+    position: static !important;
+    width: 22vw !important;
+    min-width: 48px !important;
+    max-width: 80px !important;
+    margin: 0 auto 8px auto !important;
+    display: block !important;
+    top: auto !important;
+    right: auto !important;
+  }
+  #entranceGameBtn {
+    font-size: 1.05em !important;
+    padding: 12px 0 !important;
+    border-radius: 12px !important;
+    width: 90vw !important;
+    max-width: 90vw !important;
+    margin: 8px auto 0 auto !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+    display: block !important;
+  }
+  .banner-container h1 {
+    font-size: 1.35em !important;
+    margin-bottom: 0.25em !important;
+    margin-top: 0.15em !important;
+  }
+  .herd-img, .banner-img {
+    display: none !important;
+  }
+  #loginBox {
+    position: static !important;
+    min-width: 90vw !important;
+    max-width: 98vw !important;
+    width: 98vw !important;
+    margin: 18px auto 12px auto !important;
+    border-radius: 12px !important;
+    box-sizing: border-box !important;
+    padding: 12px 2vw !important;
+    z-index: 1000 !important;
+    background: rgba(30, 34, 44, 0.96) !important;
+  }
+  #loginBox input[type="text"], #loginBox button {
+    width: 80vw !important;
+    min-width: 120px !important;
+    font-size: 1em !important;
+    margin-top: 8px !important;
+  }
+}
+  @media (max-width: 900px) and (orientation: landscape) {
+  .banner-container {
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: 98vw !important;
+    max-width: 98vw !important;
+    min-width: 0 !important;
+    padding: 8px 2vw !important;
+  }
+  .logo-img {
+    position: static !important;
+    margin: 0 auto 8px auto !important;
+    width: 18vw !important;
+    max-width: 60px !important;
+  }
+  #loginBox {
+    position: static !important;
+    width: 96vw !important;
+    max-width: 96vw !important;
+    margin: 12px auto 8px auto !important;
+  }
+}
+
  } 
 
   #loginBox {
@@ -626,6 +713,24 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
     description: 'Play the official Black Horse Puzzle Futuristic Game.',
     containerId: 'pinterest-btn-container'
   });
+
+// Sembunyikan loginBox saat landing overlay tampil
+  if (document.getElementById('landingOverlay').style.display !== 'none') {
+    document.getElementById('loginBox').style.display = 'none';
+  }
+
+  // Saat tombol Entrance diklik, landing overlay hilang, loginBox muncul
+  document.getElementById('entranceGameBtn').onclick = function() {
+    document.getElementById('landingOverlay').style.display = 'none';
+    document.getElementById('loginBox').style.display = 'block';
+    window.sessionStorage.setItem('bhpWarningShown', '1');
+    // Start SplashScene if Phaser game is ready
+    if (window.game && window.game.scene && window.game.scene.isActive) {
+      if (!window.game.scene.isActive('SplashScene')) {
+        window.game.scene.start('SplashScene');
+      }
+    }
+  };
 </script> 
 
     <style>
