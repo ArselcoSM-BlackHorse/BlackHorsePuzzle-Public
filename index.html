@@ -330,28 +330,28 @@
   }
  
   /* Style Login Box untuk layar kecil */
-  /*@media (max-width: 900px) {
+  @media (max-width: 900px) {
   #loginBox {
-    position: relative !important;
-    top: 1 !important;
+    position: absolute !important;
+    top: 0 !important;
     left: 50% !important;
     transform: translate(-50%, 0) !important;
     /*margin-top: 12px !important;      /* Jarak dari atas */
     /*margin-bottom: 24px !important;   /* Jarak bawah agar bisa scroll */
-    /*width: 220px !important;         /* Lebih pendek */
-    /*max-width: 70vw !important;
-    min-width: 160px !important;
+    width: 220px !important;         /* Lebih pendek */
+    max-width: 70vw !important;
+    min-width: 150px !important;
     margin: 0 auto !important;
-    border-radius: 2px !important;
-    border: 1px solid #00eaff !important; /* Batas garis kelihatan */
-    /*box-sizing: border-box !important;
-    padding: 2px 1px !important;
+    border-radius: 1px !important;
+    border: 0.8px solid #00eaff !important; /* Batas garis kelihatan */
+    box-sizing: border-box !important;
+    padding: 1px 0px !important;
     z-index: 10000 !important;
     background: rgba(30, 34, 44, 0.96) !important;
     display: block !important;
     text-align: center !important;
-  /* }*/
-  @media (max-width: 900px) {
+  }
+  /*@media (max-width: 900px) {
   #loginBox {
     background: none !important;
     border: none !important;
@@ -363,7 +363,7 @@
     margin: 0 auto !important;
     position: static !important;
     display: block !important;
-  }
+  /*}*/
 
   .login-row {
     display: flex !important;
@@ -381,7 +381,7 @@
     margin: 0 !important;
     padding: 8px 8px !important;
     box-sizing: border-box !important;
-    vertical-align: middle !important;
+    /*vertical-align: middle !important; */
   }
   #loginBox button {
     width: 70px !important;
@@ -391,7 +391,7 @@
     margin: 0 !important;
     padding: 8px 0 !important;
     box-sizing: border-box !important;
-    vertical-align: middle !important;
+    /*vertical-align: middle !important; */
   }
  }
 }
