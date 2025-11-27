@@ -802,24 +802,6 @@ if (window.innerWidth > 1024) {
       }
     </style>
    
-   <script>
-      // Overlay hanya muncul sekali per sesi browser
-      if (window.sessionStorage.getItem('bhpWarningShown')) {
-        document.getElementById('landingOverlay').style.display = 'none';
-      }
-      document.getElementById('entranceGameBtn').onclick = function() {
-        document.getElementById('landingOverlay').style.display = 'none';
-        window.sessionStorage.setItem('bhpWarningShown', '1');
-        // Start SplashScene if Phaser game is ready
-        if (window.game && window.game.scene && window.game.scene.isActive) {
-          // If SplashScene is not already active, start it
-          if (!window.game.scene.isActive('SplashScene')) {
-            window.game.scene.start('SplashScene');
-          }
-        }
-      };
-    </script>
-    <!-- Logo Section (add here if not present) -->
   <!-- Logo section image removed as requested -->
     <!-- Game Container -->
   <div id="game-container"></div>
