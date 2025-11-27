@@ -720,7 +720,19 @@ if (window.innerWidth > 1024) {
     loginBox.style.setProperty("display", "none", "important");
   }
 }
-
+const entranceGameBtn = document.getElementById('entranceGameBtn');
+  if (entranceGameBtn) {
+    entranceGameBtn.onclick = function() {
+      console.log('✅ Tombol entrance diklik');
+      document.getElementById('landingOverlay').style.display = 'none';
+      document.getElementById('loginBox').style.display = 'block';
+      window.sessionStorage.setItem('bhpWarningShown', '1');
+      const loader = document.getElementById('loader');
+      if (loader) loader.style.display = 'none';
+    };
+  } else {
+    console.error('❌ Tombol entrance tidak ditemukan!');
+  }
 </script> 
 
     <style>
@@ -1619,27 +1631,8 @@ function showLoginForm() {
 //-------------------------------------------------------------------------------------------
 // ✅ ENHANCED DOMCONTENTLOADED WITH level01Score MANAGEMENT:
 window.addEventListener('DOMContentLoaded', async function() {
-  const entranceGameBtn = document.getElementById('entranceGameBtn');
-  if (entranceGameBtn) {
-    entranceGameBtn.onclick = function() {
-      console.log('✅ Tombol entrance diklik');
-      document.getElementById('landingOverlay').style.display = 'none';
-      document.getElementById('loginBox').style.display = 'block';
-      window.sessionStorage.setItem('bhpWarningShown', '1');
-      const loader = document.getElementById('loader');
-      if (loader) loader.style.display = 'none';
-    };
-  } else {
-    console.error('❌ Tombol entrance tidak ditemukan!');
-  }
-  //const testBtn = document.getElementById('testEnterBtn');
-  //if (testBtn) {
-    //testBtn.onclick = function() {
-      //alert('✅ Test Enter Button berhasil diklik!');
-      // Untuk test, bisa juga sembunyikan landing overlay
-      //document.getElementById('landingOverlay').style.display = 'none';
-    //};
-  //}
+  
+  
   const loginAgainBtn = document.getElementById("loginAgainBtn");
   if (loginAgainBtn) {
     loginAgainBtn.onclick = function() {
