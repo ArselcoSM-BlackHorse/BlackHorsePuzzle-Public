@@ -684,8 +684,10 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
   //}
 // Sembunyikan loginBox saat landing overlay tampil (hanya desktop)
 if (window.innerWidth > 1024) {
-  if (document.getElementById('landingOverlay').style.display !== 'none') {
-    document.getElementById('loginBox').style.display = 'none';
+  const landingOverlay = document.getElementById('landingOverlay');
+  const loginBox = document.getElementById('loginBox');
+  if (landingOverlay && loginBox && landingOverlay.style.display !== 'none') {
+    loginBox.style.display = 'none';
   }
 }
 
