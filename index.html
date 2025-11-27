@@ -784,7 +784,7 @@ const entranceGameBtn = document.getElementById('entranceGameBtn');
       .herd-img {
         position: absolute;
         left: 0;
-        top: 30px;
+        top: 50px;
         width: 18vw;
         min-width: 120px;
         max-width: 320px;
@@ -797,6 +797,7 @@ const entranceGameBtn = document.getElementById('entranceGameBtn');
         pointer-events: none;
       }
       .banner-container {
+        top: 50px;
         margin: 0 auto;
         position: relative;
         background: #035154;
@@ -835,7 +836,7 @@ const entranceGameBtn = document.getElementById('entranceGameBtn');
       .logo-img {
         position: absolute;
         right: 0;
-        top: 30px;
+        top: 50px;
         width: 20vw;
         min-width: 80px;
         max-width: 200px;
@@ -1023,11 +1024,6 @@ document.addEventListener('visibilitychange', () => {
         completionTime: time,
         isPerfectGame: false
       });
-
-      //navigator.sendBeacon(
-        //'https://backend-paypalblackhorsepuzzle.onrender.com/api/users/' + encodeURIComponent(email) + '/update-progress',
-        //new Blob([data], { type: 'text/plain' })
-      //);
     }
   }
 });
