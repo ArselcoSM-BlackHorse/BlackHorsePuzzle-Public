@@ -77,9 +77,9 @@
       }
   /* Tampilkan maintenance-overlay di layar kecil, sembunyikan landingOverlay dan loginBox */
  @media (max-width: 1024px) {
-  #maintenance-overlay { display: flex !important; z-index: 100000 !important; }
+  #maintenance-overlay { display: none !important; }
   #landingOverlay { display: flex !important; }
-  #loginBox { display: none !important; }
+  #loginBox { display: block !important; }
 }
 @media (min-width: 1025px) {
   #maintenance-overlay { display: none !important; }
@@ -699,8 +699,8 @@ if (window.innerWidth > 1024) {
     // Simpan di sessionStorage bahwa peringatan sudah ditampilkan
     window.sessionStorage.setItem('bhpWarningShown', '1');
     // Sembunyikan loader jika masih tampil
-    //const loader = document.getElementById('loader');
-    //if (loader) loader.style.display = 'none';
+    const loader = document.getElementById('loader');
+    if (loader) loader.style.display = 'none';
     // Start SplashScene if Phaser game is ready
     waitForGameReady(function() {
     if (window.game && window.game.scene && window.game.scene.isActive) {
