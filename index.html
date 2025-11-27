@@ -323,21 +323,27 @@
   #loginBox {
   position: absolute;
   top: 6%;
-  left: 100%;
+  left: 88%;
   transform: translate(-50%, -50%);
   background: rgba(30, 34, 44, 0.92);
-  border-radius: 6px;
+  border-radius: 12px;
   box-shadow: 0 4px 24px #00eaff40;
-  padding: 14px 20px 10px 20px;
-  min-width: 260px;
+  padding: 18px 24px 14px 24px;
+  min-width: 340px;
   z-index: 1000;
   display: none;
   text-align: center;
   border: 1.5px solid #00eaff;
   backdrop-filter: blur(6px);
-  }
- 
-  #loginBox input[type="text"] {
+} 
+.login-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+  
+#loginBox input[type="text"] {
   width: 200px; /* Lebar input */
   padding: 8px 10px;
   border: 1.2px solid #00eaff;
@@ -348,15 +354,22 @@
   outline: none;
   box-shadow: 0 0 6px #00eaff40 inset;
   transition: border 0.2s;
-  }
-  #loginBox button {
-   width: 70px !important;         /* Lebar tombol login lebih kecil */
-    min-width: 50px !important;
-    max-width: 80px !important;
-    font-size: 1em !important;
-    margin: 0 !important;
-    padding: 8px 0 !important;
-    box-sizing: border-box !important; 
+}
+#loginBox input[type="text"]:focus {
+  border: 1.2px solid #fff;
+}
+#loginBox button {
+  background: linear-gradient(90deg, #00eaff 0%, #0078ff 100%);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 8px 22px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 0 12px #00eaff60;
+  letter-spacing: 1px;
+  transition: background 0.2s, box-shadow 0.2s;
   }
 }
 @media (max-width: 900px) {
