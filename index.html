@@ -81,7 +81,7 @@
         display: block;
          max-width: 100vw;
          max-height: 100vh;
-        margin: 0 auto;
+         margin: 0 auto;
       }
 
 /* Jika ada maintenance diaktifkan, gunakan kode di atas dan sesuaikan ukuran layar sesuai kebutuhan */
@@ -322,7 +322,7 @@
     margin: 6px auto 0 auto !important;
     box-sizing: border-box !important;
     text-align: center !important;
-    /* display: block !important; */
+    display: block !important;
   }
   .banner-container h1 {
     font-size: 1.2em !important;
@@ -444,7 +444,7 @@
    .responsive-img {
     max-width: 100vw !important;
     height: auto !important;
-   /* display: block !important; */
+    display: block !important;
   }
 /*} /* Akhir media query layar kecil */
 
@@ -712,7 +712,7 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
    <div style="width:100%;display:flex;flex-direction:column;align-items:center;">
    </div>      
         <!-- Kiri: Herd (lebih besar, lebih naik) -->
-  <!-- <img src="BlackHorseHerd.webp" alt="Black Horse & Herd" class="responsive-img herd-img" loading="lazy"> -->  
+  <img src="BlackHorseHerd.webp" alt="Black Horse & Herd" class="responsive-img herd-img" loading="lazy">  
    
     <!-- Logo di atas banner --> 
     <img src="LogoBlackHorse.webp" alt="Black Horse Logo" class="responsive-img logo-img" loading="lazy">
@@ -946,7 +946,7 @@ const entranceGameBtn = document.getElementById('entranceGameBtn');
         margin: 0 auto 12px auto !important;
         left: auto !important;
         right: auto !important;
-        top: auto !important;
+        top: 5px !important;
         width: 64px !important;
         min-width: 48px !important;
         max-width: 80px !important;
@@ -954,7 +954,7 @@ const entranceGameBtn = document.getElementById('entranceGameBtn');
       }
 
       @media (max-width: 900px) {
-        .herd-img { width: 32vw; min-width: 60px; }
+        /*.herd-img { width: 32vw; min-width: 60px; } jangan panggil herd untuk hp/tablet*/
         .banner-img { width: 60vw; min-width: 60px; }
         .logo-img { width: 32vw; min-width: 60px; }
         .banner-container { padding: 18px 2vw; max-width: 98vw; }
@@ -1467,7 +1467,7 @@ document.getElementById("verifyBtn").onclick = async function() {
       localStorage.setItem("email", email);
       document.getElementById("verificationBox").style.display = "none";
       document.getElementById("logoutBtn").style.display = "inline-block";
-      document.getElementById("loginBox").style.display = "none"; // loginBox disembunyikan
+      document.getElementById("loginBox").style.setProperty("display", "none", "important");
       document.getElementById("verificationCodeInput").value = "";
       if (window.Phaser && window.game && window.game.scene) {
         //window.game.scene.start("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/SplashScene.js");
