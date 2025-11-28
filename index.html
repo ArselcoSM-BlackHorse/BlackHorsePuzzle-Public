@@ -387,7 +387,7 @@
     max-width: 180px !important;
   }
   body.samsung #loginBox button {
-    width: 60px !important;
+    width: 50px !important;
     min-width: 50px !important;
     max-width: 80px !important;
   }
@@ -768,6 +768,9 @@ const entranceGameBtn = document.getElementById('entranceGameBtn');
       console.log('✅ Tombol entrance diklik');
       document.getElementById('landingOverlay').style.display = 'none';
       document.getElementById('loginBox').style.display = 'block';
+      if (window.innerWidth <= 900) {
+      document.getElementById("loginBox").style.display = "none";
+      }
       window.sessionStorage.setItem('bhpWarningShown', '1');
       const loader = document.getElementById('loader');
       if (loader) loader.style.display = 'none';
@@ -1337,9 +1340,6 @@ try {
     await window.resendVerificationEmail(inputEmail);
     console.log('Step 4: Showing verification box...');
     // Tampilkan verificationBox, sembunyikan login dan logoutBtn
-    if (window.innerWidth <= 900) {
-    document.getElementById("loginBox").style.display = "none";
-    }
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("logoutBtn").style.display = "none";
     // Tampilkan verificationBox
