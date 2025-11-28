@@ -54,6 +54,15 @@
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
+    
+    // Tambahkan script deteksi Samsung di bawah favicon
+      document.addEventListener('DOMContentLoaded', function() {
+      var ua = navigator.userAgent.toLowerCase();
+      if (ua.includes('samsung')) {
+        document.body.classList.add('samsung');
+        console.log('✅ Samsung device detected: body.samsung applied');
+      }
+    }); 
     </script>
   
     <style>
