@@ -54,7 +54,6 @@
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-    
     // Tambahkan script deteksi Samsung di bawah favicon
       document.addEventListener('DOMContentLoaded', function() {
       var ua = navigator.userAgent.toLowerCase();
@@ -62,7 +61,7 @@
         document.body.classList.add('samsung');
         console.log('✅ Samsung device detected: body.samsung applied');
       }
-    }); 
+    });   
     </script>
   
     <style>
@@ -301,26 +300,19 @@
     align-items: center !important;
     justify-content: flex-start !important;
   }
+  @media (max-width: 900px) {
   .logo-img {
     display: block !important;
-    margin: 0 auto 18px auto !important;
-    position: static !important;
-    width: 80vw !important;
-    min-width: 48px !important;
-    max-width: 120px !important;
-    margin: 0 auto 18px auto !important;
-    /* display: block !important; */
-    top: auto !important;
-    right: auto !important;
-   @media (max-width: 900px) {
-  .logo-img {
     margin: 0 auto 12px auto !important;
+    position: static !important;
     width: 22vw !important;
     min-width: 48px !important;
     max-width: 80px !important;
+    top: auto !important;
+    right: auto !important;
   }
- }
 }
+   
   #entranceGameBtn {
     font-size: 0.95em !important;
     padding: 10px 0 !important;
@@ -339,9 +331,8 @@
   }
  
   /* Style Login Box untuk layar kecil */
- 
- /* Default untuk HP lain (Vivo, Xiaomi, dst) */
-@media (max-width: 900px) {
+  /* Default untuk HP lain (Vivo, Xiaomi, dst) */
+  @media (max-width: 900px) {
   #loginBox {
     position: fixed !important;
     top: 24px !important;
@@ -382,10 +373,10 @@
     min-width: 0 !important;
     max-width: 100vw !important;
     margin: 0 auto !important;
-    background: none !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
+    background: none !important; /* kotak utama dihilangkan */
+    border: none !important; /* border dihilangkan */
+    box-shadow: none !important; /* shadow dihilangkan */
+    padding: 0 !important; /* padding dihilangkan */
     display: block !important;
     text-align: center !important;
     z-index: 10000 !important;
@@ -394,15 +385,34 @@
     width: 120px !important;
     min-width: 80px !important;
     max-width: 180px !important;
+    font-size: 1em !important;
+    padding: 6px 8px !important;
+    transition: width 0.3s, font-size 0.3s, box-shadow 0.3s;
+  }
+  body.samsung #loginBox input[type="text"]:hover {
+    width: 220px !important;
+    font-size: 1.15em !important;
+    box-shadow: 0 0 12px #00eaff80 inset !important;
+    background: #23283a !important;
   }
   body.samsung #loginBox button {
     width: 50px !important;
     min-width: 50px !important;
     max-width: 80px !important;
+    font-size: 1em !important;
+    padding: 7px 0 !important;
+    transition: width 0.3s, font-size 0.3s, box-shadow 0.3s;
+  }
+  body.samsung #loginBox button:active,
+  body.samsung #loginBox button:focus {
+    width: 120px !important;
+    font-size: 1.15em !important;
+    box-shadow: 0 0 12px #00eaff80 !important;
+    background: #0078ff !important;
   }
  }
 }
- 
+  
 /* Style Verification Box untuk layar kecil */
 @media (max-width: 900px) {
   #verificationBox {
@@ -712,7 +722,13 @@ if (!scene || !scene.sys || scene.sys.isDestroyed) {
           <h1 style="font-size:2.8em;margin-bottom:0.35em;margin-top:0.2em;color:#00eaff;letter-spacing:1px;text-align:center;font-weight:700;">Official Black Horse Puzzle</h1>
           <!-- <img src="Black Horse-Please Wait.webp" alt="Black Horse Standing" class="responsive-img banner-img" loading="lazy"> -->
           <!-- <img src="LogoBlackHorse.webp" alt="Black Horse Standing" class="responsive-img banner-img" loading="lazy"> --> 
-          <button id="entranceGameBtn" style="margin:20px auto 24px auto;display:block;background:linear-gradient(90deg,#00eaff 0%,#0078ff 100%);color:#fff;border:none;border-radius:12px;padding:18px 64px;font-size:1.45em;font-weight:700;cursor:pointer;box-shadow:0 0 24px #00eaffcc,0 0 48px #0078ff44 inset;letter-spacing:1.3px;transition:background 0.2s,box-shadow 0.2s;animation:entrance-glow 1.6s infinite alternate;">Enter Black Horse Puzzle</button>
+          <!-- <button id="entranceGameBtn" style="margin:20px auto 24px auto;display:block;background:linear-gradient(90deg,#00eaff 0%,#0078ff 100%);color:#fff;border:none;border-radius:12px;padding:18px 64px;font-size:1.45em;font-weight:700;cursor:pointer;box-shadow:0 0 24px #00eaffcc,0 0 48px #0078ff44 inset;letter-spacing:1.3px;transition:background 0.2s,box-shadow 0.2s;animation:entrance-glow 1.6s infinite alternate;">Enter Black Horse Puzzle</button> -->
+          <button id="entranceGameBtn" class="animated-entrance-btn">
+          <span class="enter-word">Enter</span>
+          <span class="black-word">Black</span>
+          <span class="horse-word">Horse</span>
+          <span class="puzzle-word">Puzzle</span>
+          </button>
           <div style="width:100%;max-width:340px;margin:8px auto 0 auto;">
         <hr style="border:none;border-top:2.5px solid #0891b2;box-shadow:0 0 12px #00eaff80; margin:0 0 8px 0;">
         <span style="display:block;font-size:1em;color:#b0e0ff;font-weight:500;text-align:center;letter-spacing:0.5px;">
@@ -777,9 +793,6 @@ const entranceGameBtn = document.getElementById('entranceGameBtn');
       console.log('✅ Tombol entrance diklik');
       document.getElementById('landingOverlay').style.display = 'none';
       document.getElementById('loginBox').style.display = 'block';
-      if (window.innerWidth <= 900) {
-      document.getElementById("loginBox").style.display = "none";
-      }
       window.sessionStorage.setItem('bhpWarningShown', '1');
       const loader = document.getElementById('loader');
       if (loader) loader.style.display = 'none';
@@ -850,22 +863,14 @@ const entranceGameBtn = document.getElementById('entranceGameBtn');
         display: block;
         filter: drop-shadow(0 0 24px #00eaff80);
       }
-      /* Responsive: mobile */
-      @media (max-width: 900px) {
-      .banner-img {
-        width: 38vw;
-        min-width: 60px;
-        max-width: 110px;
-      }
-    }
-
+    
       .logo-img {
         position: absolute;
         right: 0;
         top: 50px;
-        width: 20vw;
-        min-width: 80px;
-        max-width: 200px;
+        width: 15vw;
+        min-width: 60px;
+        max-width: 150px;
         margin-right: 2vw;
         border-radius: 20px;
         box-shadow: 0 0 32px #00eaffcc;
@@ -875,6 +880,65 @@ const entranceGameBtn = document.getElementById('entranceGameBtn');
         z-index: 3;
         pointer-events: none;
       }
+
+/* tambahan animasi Enter Black Horse Puzzle */
+  .animated-entrance-btn {
+  margin: 20px auto 24px auto;
+  display: block;
+  background: linear-gradient(90deg,#00eaff 0%,#0078ff 100%);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 18px 24px;
+  font-size: 1.45em;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 0 24px #00eaffcc,0 0 48px #0078ff44 inset;
+  letter-spacing: 1.3px;
+  transition: background 0.2s,box-shadow 0.2s;
+  animation: entrance-glow 1.6s infinite alternate;
+}
+
+.enter-word {
+  color: #39ff14; /* Hijau terang */
+  animation: moveX 1.2s infinite alternate;
+  animation-delay: 0s;
+  margin-right: 8px;
+}
+.black-word {
+  color: #ffe600; /* Kuning terang */
+  animation: moveX 1.2s infinite alternate;
+  animation-delay: 0.3s;
+  margin-right: 8px;
+}
+.horse-word {
+  color: #ff1744; /* Merah terang */
+  animation: moveX 1.2s infinite alternate;
+  animation-delay: 0.6s;
+  margin-right: 8px;
+}
+.puzzle-word {
+  color: #00eaff; /* Biru terang */
+  animation: moveX 1.2s infinite alternate;
+  animation-delay: 0.9s;
+}
+
+@keyframes moveX {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(18px); }
+  100% { transform: translateX(0); }
+}
+/* batas tambahan animasi Enter Black Horse Puzzle */
+
+        /* Responsive: mobile */
+       @media (max-width: 900px) {
+       .banner-img {
+         width: 38vw;
+         min-width: 60px;
+         max-width: 110px;
+       }
+      }
+
       @media (max-width: 900px) {
         .logo-img {
         position: static !important;
@@ -1349,6 +1413,9 @@ try {
     await window.resendVerificationEmail(inputEmail);
     console.log('Step 4: Showing verification box...');
     // Tampilkan verificationBox, sembunyikan login dan logoutBtn
+    if (window.innerWidth <= 900) {
+    document.getElementById("loginBox").style.display = "none";
+    }
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("logoutBtn").style.display = "none";
     // Tampilkan verificationBox
@@ -1400,6 +1467,7 @@ document.getElementById("verifyBtn").onclick = async function() {
       localStorage.setItem("email", email);
       document.getElementById("verificationBox").style.display = "none";
       document.getElementById("logoutBtn").style.display = "inline-block";
+      document.getElementById("loginBox").style.display = "none"; // loginBox disembunyikan
       document.getElementById("verificationCodeInput").value = "";
       if (window.Phaser && window.game && window.game.scene) {
         //window.game.scene.start("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/SplashScene.js");
