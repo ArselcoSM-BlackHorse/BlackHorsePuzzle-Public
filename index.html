@@ -440,14 +440,11 @@
     align-items: stretch !important;
   }
 }
-
-   .responsive-img {
+  /* .responsive-img {
     max-width: 100vw !important;
     height: auto !important;
     display: block !important;
-  }
-/*} /* Akhir media query layar kecil */
-
+  }*/
 
   /* Logo di HP/tablet: tengah atas banner */
 @media (max-width: 900px) {
@@ -462,8 +459,19 @@
     min-width: 48px !important;
     max-width: 80px !important;
   }
+  }
+ /*} /* Akhir media query layar kecil */ 
+ /* Sembunyikan loginBox dan herd-img di landscape mode pada layar sedang */
+  @media (max-width: 900px) and (orientation: landscape) {
+  #loginBox {
+    display: none !important;
+  }
+  @media (max-width: 900px) {
+  .herd-img {
+    display: none !important;
+  }
  }
-
+}
 </style>
 
 <script>
@@ -945,7 +953,7 @@ const entranceGameBtn = document.getElementById('entranceGameBtn');
       }
 
       @media (max-width: 900px) {
-        /*.herd-img { width: 32vw; min-width: 60px; } jangan panggil herd untuk hp/tablet*/
+        .herd-img { width: 32vw; min-width: 60px; } /*jangan panggil herd untuk hp/tablet*/
         .banner-img { width: 60vw; min-width: 60px; }
         .logo-img { width: 32vw; min-width: 60px; }
         .banner-container { padding: 18px 2vw; max-width: 98vw; }
