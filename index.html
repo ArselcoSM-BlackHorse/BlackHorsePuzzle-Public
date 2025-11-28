@@ -84,6 +84,19 @@
          margin: 0 auto;
       }
 
+/*} /* Akhir media query layar kecil */ 
+ /* Sembunyikan loginBox dan herd-img di landscape mode pada layar sedang */
+  @media (max-width: 900px) and (orientation: landscape) {
+  #loginBox {
+    display: none !important;
+  }
+  @media (max-width: 900px) {
+  .herd-img {
+    display: none !important;
+  }
+ }
+}
+
 /* Jika ada maintenance diaktifkan, gunakan kode di atas dan sesuaikan ukuran layar sesuai kebutuhan */
 /* Tampilkan maintenance-overlay di layar kecil, sembunyikan landingOverlay dan loginBox */
 /* @media (max-width: 1024px) {
@@ -454,24 +467,13 @@
     margin: 3px auto 12px auto !important;
     left: auto !important;
     right: auto !important;
-    top: 5px !important;
+    top: 10px !important;
     width: 64px !important;
     min-width: 48px !important;
     max-width: 80px !important;
   }
   }
- /*} /* Akhir media query layar kecil */ 
- /* Sembunyikan loginBox dan herd-img di landscape mode pada layar sedang */
-  @media (max-width: 900px) and (orientation: landscape) {
-  #loginBox {
-    display: none !important;
-  }
-  @media (max-width: 900px) {
-  .herd-img {
-    display: none !important;
-  }
- }
-}
+ 
 </style>
 
 <script>
