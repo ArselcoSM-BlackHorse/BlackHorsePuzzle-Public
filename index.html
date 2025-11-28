@@ -448,16 +448,7 @@
   }
 /*} /* Akhir media query layar kecil */
 
-/* Sembunyikan loginBox dan herd-img di landscape mode pada layar sedang */
-  @media (max-width: 900px) and (orientation: landscape) {
-  #loginBox {
-    display: none !important;
-  }
-  @media (max-width: 900px) {
-  .herd-img {
-    display: none !important;
-  }
- }
+
   /* Logo di HP/tablet: tengah atas banner */
 @media (max-width: 900px) {
   .logo-img {
@@ -472,7 +463,7 @@
     max-width: 80px !important;
   }
  }
-} 
+
 </style>
 
 <script>
@@ -959,7 +950,19 @@ const entranceGameBtn = document.getElementById('entranceGameBtn');
         .logo-img { width: 32vw; min-width: 60px; }
         .banner-container { padding: 18px 2vw; max-width: 98vw; }
       }
-    </style>
+
+  /* Sembunyikan loginBox dan herd-img di landscape mode pada layar sedang */
+  @media (max-width: 900px) and (orientation: landscape) {
+  #loginBox {
+    display: none !important;
+  }
+  @media (max-width: 900px) {
+  .herd-img {
+    display: none !important;
+  }
+ }
+}
+</style>
    
   <!-- Logo section image removed as requested -->
     <!-- Game Container -->
