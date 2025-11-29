@@ -84,19 +84,7 @@
          margin: 0 auto;
       }
 
-/*} /* Akhir media query layar kecil */ 
- /* Sembunyikan loginBox dan herd-img di landscape mode pada layar sedang */
-  @media (max-width: 900px) and (orientation: landscape) {
-  #loginBox {
-    display: none !important;
-  }
-  @media (max-width: 900px) {
-  .herd-img {
-    display: none !important;
-  }
- }
-}
-
+/* =================== Maintenance Overlay ================== */
 /* Jika ada maintenance diaktifkan, gunakan kode di atas dan sesuaikan ukuran layar sesuai kebutuhan */
 /* Tampilkan maintenance-overlay di layar kecil, sembunyikan landingOverlay dan loginBox */
 /* @media (max-width: 1024px) {
@@ -453,11 +441,11 @@
     align-items: stretch !important;
   }
 }
-  /* .responsive-img {
+   .responsive-img {
     max-width: 100vw !important;
     height: auto !important;
     display: block !important;
-  }*/
+  }
 
   /* Logo di HP/tablet: tengah atas banner */
 @media (max-width: 900px) {
@@ -961,17 +949,11 @@ const entranceGameBtn = document.getElementById('entranceGameBtn');
         .banner-container { padding: 18px 2vw; max-width: 98vw; }
       }
 
-  /* Sembunyikan loginBox dan herd-img di landscape mode pada layar sedang */
-  @media (max-width: 900px) and (orientation: landscape) {
-  #loginBox {
-    display: none !important;
-  }
-  @media (max-width: 900px) {
-  .herd-img {
-    display: none !important;
-  }
- }
-}
+      /* Sembunyikan loginBox dan herd-img di landscape mode pada layar sedang */
+      @media (max-width: 900px) and (orientation: landscape) {
+     #loginBox { display: none !important; }
+     .herd-img { display: none !important; }
+     }
 </style>
    
   <!-- Logo section image removed as requested -->
