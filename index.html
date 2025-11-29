@@ -943,11 +943,17 @@ const entranceGameBtn = document.getElementById('entranceGameBtn');
       }
 
       @media (max-width: 900px) {
-        .herd-img { width: 32vw; min-width: 60px; } /*jangan panggil herd untuk hp/tablet*/
+        .herd-img { width: 32vw; min-width: 60px;  
+         /* Tambahkan pengaturan posisi dan ukuran di bawah */
+         top: 5px !important;      /* Lebih naik dari top: 50px */
+         left: 2vw !important;      /* Tetap di kiri */
+         max-width: 110px !important; /* Maksimal lebih kecil */
+         border-radius: 12px !important;
+        }
         .banner-img { width: 60vw; min-width: 60px; }
         .logo-img { width: 32vw; min-width: 60px; }
         .banner-container { padding: 18px 2vw; max-width: 98vw; }
-      }
+        }
 
       /* Sembunyikan loginBox dan herd-img di landscape mode pada layar sedang */
       @media (max-width: 900px) and (orientation: landscape) {
