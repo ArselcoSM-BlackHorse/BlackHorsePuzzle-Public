@@ -960,7 +960,13 @@ const entranceGameBtn = document.getElementById('entranceGameBtn');
      #loginBox { display: none !important; }
      .herd-img { display: none !important; }
      }
-</style>
+     /* Sembunyikan loginBox dan herd-img di potrait */
+     @media (max-width: 900px) and (orientation: portrait) {
+     #loginBox { display: none !important; }
+     .herd-img { display: none !important; }
+     }
+
+  </style>
    
   <!-- Logo section image removed as requested -->
     <!-- Game Container -->
