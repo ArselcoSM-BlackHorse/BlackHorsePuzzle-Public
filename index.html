@@ -1424,6 +1424,7 @@ try {
     await window.resendVerificationEmail(inputEmail);
     console.log('Step 4: Showing verification box...');
     // Tampilkan verificationBox, sembunyikan login dan logoutBtn
+      document.getElementById("loginBox").classList.add("hidden"); 
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("logoutBtn").style.display = "none";
     // Tampilkan verificationBox
@@ -1477,7 +1478,7 @@ try {
       document.getElementById("logoutBtn").style.display = "inline-block";
       
       //document.getElementById("loginBox").style.setProperty("display", "none", "important");
-      document.getElementById("loginBox").classList.remove("hidden");
+      document.getElementById("loginBox").classList.add("hidden");
      
       document.getElementById("verificationCodeInput").value = "";
       if (window.Phaser && window.game && window.game.scene) {
