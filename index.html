@@ -1420,9 +1420,6 @@ try {
     await window.resendVerificationEmail(inputEmail);
     console.log('Step 4: Showing verification box...');
     // Tampilkan verificationBox, sembunyikan login dan logoutBtn
-    if (window.innerWidth <= 900) {
-    document.getElementById("loginBox").style.display = "none";
-    }
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("logoutBtn").style.display = "none";
     // Tampilkan verificationBox
@@ -1452,7 +1449,7 @@ try {
   
 // ✅ ENHANCED VERIFICATION HANDLER:
  // Handler tombol Verify
-document.getElementById("verifyBtn").onclick = async function() {
+  document.getElementById("verifyBtn").onclick = async function() {
   const email = document.getElementById('emailInput').value.trim();
   const raw = document.getElementById('verificationCodeInput').value || '';
   const code = raw.toUpperCase().replace(/[^A-Z0-9]/g, ''); // normalisasi OTP 
@@ -1474,7 +1471,10 @@ document.getElementById("verifyBtn").onclick = async function() {
       localStorage.setItem("email", email);
       document.getElementById("verificationBox").style.display = "none";
       document.getElementById("logoutBtn").style.display = "inline-block";
-      document.getElementById("loginBox").style.setProperty("display", "none", "important");
+      if (window.innerWidth <= 900) {
+      document.getElementById("loginBox").style.display = "none";
+      }
+      //document.getElementById("loginBox").style.setProperty("display", "none", "important");
       document.getElementById("verificationCodeInput").value = "";
       if (window.Phaser && window.game && window.game.scene) {
         //window.game.scene.start("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/SplashScene.js");
