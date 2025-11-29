@@ -955,6 +955,10 @@ const entranceGameBtn = document.getElementById('entranceGameBtn');
         .banner-container { padding: 18px 2vw; max-width: 98vw; }
         }
 
+      .hidden {
+        display: none !important;
+       }  
+
      /* Sembunyikan loginBox (sebelum input login) dan herd-img di landscape mode pada layar sedang */
      /* @media (max-width: 900px) and (orientation: landscape) {
      #loginBox { display: none !important; }
@@ -1471,10 +1475,11 @@ try {
       localStorage.setItem("email", email);
       document.getElementById("verificationBox").style.display = "none";
       document.getElementById("logoutBtn").style.display = "inline-block";
-      if (window.innerWidth <= 900) {
-      document.getElementById("loginBox").style.display = "none";
-      }
+      
       //document.getElementById("loginBox").style.setProperty("display", "none", "important");
+      document.getElementById("loginBox").classList.remove("hidden");
+      document.getElementById("loginBox").style.display = "block";
+
       document.getElementById("verificationCodeInput").value = "";
       if (window.Phaser && window.game && window.game.scene) {
         //window.game.scene.start("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/SplashScene.js");
