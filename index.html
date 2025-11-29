@@ -955,7 +955,7 @@ const entranceGameBtn = document.getElementById('entranceGameBtn');
         .banner-container { padding: 18px 2vw; max-width: 98vw; }
         }
 
-      .hidden {
+      #loginBox.hidden {
         display: none !important;
        }  
 
@@ -1424,7 +1424,7 @@ try {
     await window.resendVerificationEmail(inputEmail);
     console.log('Step 4: Showing verification box...');
     // Tampilkan verificationBox, sembunyikan login dan logoutBtn
-      document.getElementById("loginBox").classList.add("hidden"); 
+    document.getElementById("loginBox").classList.add("hidden"); 
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("logoutBtn").style.display = "none";
     // Tampilkan verificationBox
@@ -1477,9 +1477,6 @@ try {
       document.getElementById("verificationBox").style.display = "none";
       document.getElementById("logoutBtn").style.display = "inline-block";
       
-      //document.getElementById("loginBox").style.setProperty("display", "none", "important");
-      document.getElementById("loginBox").classList.add("hidden");
-     
       document.getElementById("verificationCodeInput").value = "";
       if (window.Phaser && window.game && window.game.scene) {
         //window.game.scene.start("https://backend-paypalblackhorsepuzzle.onrender.com/Scenes/SplashScene.js");
